@@ -5,7 +5,6 @@ n = int(input())
 a = [list(map(int,input().split())) for i in range(n)]
 d = [[0 for i in range(n)] for i in range(n)]
 
-
 # 인접한 2개의 행렬은 미리 곱하여 배열에 넣는다.
 for i in range(n-1):
     d[i][i+1] = a[i][0]*a[i+1][0]*a[i+1][1]
