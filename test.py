@@ -1,53 +1,21 @@
-"""
-4
-2 3 3 3
-3
-1 4 10
+# n, m = map(int, input().split())
+# memory = [0] + list(map(int, input().split()))
+# cost = [0] + list(map(int, input().split()))
+n, m = 5, 60
+memory = [0, 30, 10, 20, 35, 40]
+cost = [0, 3, 0, 3, 5, 4]
+length = sum(cost)+1
+dp = [[0 for _ in range(length)] for _ in range(n+1)]
+ans = 10001
 
-     0  1  2  3
- 0|  0  0  0  0 
- 1|  0  0  0  0
- 2|  2  2  2  2
- 3|  2  3  3  3
- 4|  2  3  3  3
- 5|  2  5  5  5
- 6|  2  5  6  6
- 7|  2  5  6  6
- 8|  2  5  8  8
- 9|  2  5  8  8
-10|  2  5  8  8
-11|  2  5  8 11
-...
+for i in range(1, n+1):
+    ci, mi = cost[i], memory[i]
+    for j in range(length):
+        dp[i][j] = dp[i-1][j]
+    for p in dp:print(p)
+    for j in range(ci, length):
+        dp[i][j] = max(dp[i-1][j-ci] + mi, dp[i][j])
+        if dp[i][j] >= m:
+            ans = min(ans, j)
 
-     0  1  2  3  4
- 0|  0  0  0  0  0 
- 1|  0  0  0  0  1
- 2|  2  2  2  2  2
- 3|  2  3  3  3  3
- 4|  2  3  3  3  4
- 5|  2  5  5  5  5
- 6|  2  5  6  6  6
- 7|  2  5  6  6  7
- 8|  2  5  8  8  8
- 9|  2  5  8  8  9
-10|  2  5  8  8 10
-11|  2  5  8 11 11
-12|  2  5  8 11 12
-...
-
-     0  1  2  3  4
- 0|  0  0  0  0  0
- 1|  0  0  0  0  0
- 2|  2  2  2  2  2
- 3|  2  3  3  3  3
- 4|  2  3  3  3  4
- 5|  2  5  5  5  5
- 6|  2  5  6  6  6
- 7|  2  5  6  6  6
- 8|  2  5  8  8  8
- 9|  2  5  8  8  8
-10|  2  5  8  8 10
-11|  2  5  8 11 11
-...
-
-"""
+for _ in dp:print(_)
