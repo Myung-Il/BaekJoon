@@ -1,24 +1,32 @@
-from sys import stdin, setrecursionlimit
-setrecursionlimit(10**5)
-input = lambda:stdin.readline().rstrip()
+import sys
 
-def dfs(now):
-    global deep
-    for elm in range(1, n+1):
-        if l[now][elm] and not visit[elm]:
-            deep+=1
-            visit[elm] = deep
-            dfs(elm)
 
-n, m, r = map(int,input().split())
-l = [[0]*(n+1)for _ in range(n+1)]
-visit = [0]*(n+1)
-for _ in range(m):
-    a, b = map(int,input().split())
-    l[a][b], l[b][a] = 1, 1
+input = lambda: sys.stdin.readline().rstrip()
+MAX = 100000000
+n, m = map(int, input().split())
 
-deep = 1
-visit[r] = deep
-dfs(r)
+dist = [MAX for _ in range(n + 1)]
+edge = [tuple(map(int, input().split())) for _ in range(m)]
 
-for idx in range(1, n+1):print(visit[idx])
+
+def bf():  # bellman-ford
+    dist[1] = 0
+    for i in range(n):  # n-1 번 돌고, 마지막 n번째에는 갱신되면 음의 싸이클 있는지 보는 것
+        for e in edge:
+            frm, to, cost = e
+            if dist[frm] != MAX and dist[to] > dist[frm] + cost:
+                dist[to] = dist[frm] + cost  # 값 갱신
+                if i == n - 1:  # 만약 n번째 시도에도 값 갱신됐으면
+                    print("===", i, n-1)
+                    return 1  # 음의 싸이클 존재
+
+    return 0  # 음의 싸이클 존재하지 않음
+
+
+if bf():
+    print(dist)
+    print(-1)
+else:
+    print(dist)
+    for i in range(2, n + 1):
+        print(-1 if dist[i] == MAX else dist[i])
