@@ -1,24 +1,27 @@
-import sys
-input = sys.stdin.readline
+from sys import stdin
+input = lambda:stdin.readline().rstrip()
 
-A,B = "-"+input().rstrip(),"-"+input().rstrip()
-dp = [[0]*(len(A)) for _ in range(len(B))]
+def Distance(a, b):
+    return abs(a[0]-b[0])+abs(a[1]-b[1])
 
-for i in range(1,len(B)):
-    for j in range(1,len(A)):
-        if A[j] == B[i]:
-            dp[i][j] = dp[i-1][j-1]+1
-        else:
-            dp[i][j] = max(dp[i][j-1],dp[i-1][j])
-print(dp[-1][-1])
+def DFS(deep, sum, a, b, l):
+    global ans, assign
+    if deep==w:
+        if ans>sum:
+            ans, assign = sum, l
+        return
+    elif sum>ans:return
 
-i,j = len(B)-1,len(A)-1
-ans = ""
-while i>0 and j>0:
-    if   dp[i][j] == dp[i][j-1]: j-=1
-    elif dp[i][j] == dp[i-1][j]: i-=1
-    else:
-        ans = A[j] + ans
-        i-=1; j-=1
-if ans:
-    print(ans)
+    location = incident[deep]
+    DFS(deep+1, sum+Distance(location, a), location, b, l+[1])
+    DFS(deep+1, sum+Distance(location, b), a, location, l+[2])
+
+
+n = int(input()) # 도로의 개수
+w = int(input()) # 사건의 수
+incident = [list(map(int,input().split()))for _ in range(w)] # 사건의 좌표
+
+ans, assign = float("inf"), []
+DFS(0, 0, [1, 1], [n, n], [])
+print(ans)
+print(*assign, sep='\n')
