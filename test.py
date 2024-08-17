@@ -1,3 +1,3 @@
-a = float('inf')
-
-print(a == 0)
+l = [7, 0, 1, 2, 3, 4, 5]
+l.sort()
+print(l)
