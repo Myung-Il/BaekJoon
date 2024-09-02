@@ -1,2 +1,4 @@
-d = {"a":0, "c":1, "b":2}
-print(d.)
+def p(a, b, c):
+    return a+b+c
+
+print( p(*[1,2,3]) )

@@ -1,18 +1,4 @@
-def dfs(now, frm):
-    print(now)
+a1, a2 = 1, 1
+b1, b2 = 2, 2
 
-    for elm in li[now]:
-        if visit[elm]and frm!=elm:
-            print('No Tree')
-            return
-        if visit[elm]:continue
-        visit[elm] = 1
-        dfs(elm, now)
-    print('Tree')
-    return
-
-li = [[], [2, 6], [1, 3, 4, 5], [2], [2], [2, 6], [1, 5]]
-# li = [[], [2, 6], [1, 3, 4, 5], [2], [2], [2, 6], [5]]
-visit = [0]*len(li)
-visit[1] = 1
-dfs(1, 1)
+print(  ((a1-b1)**2+(a2-b2)**2)**0.5  )
