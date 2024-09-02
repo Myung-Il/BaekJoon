@@ -1,5 +1,6 @@
-from sys import stdin
+from sys import stdin, setrecursionlimit
 input = lambda:stdin.readline().rstrip()
+setrecursionlimit(10**6)
 
 
 def dfs(e, m):
