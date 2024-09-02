@@ -81,4 +81,5 @@ s = 0
 for a, b, w in bridge:
     union(a, b, w)
 
-print(s if s else -1)
+for elm in range(1, land_num)
+print(s if s and len(set(parents))==2 else -1)
