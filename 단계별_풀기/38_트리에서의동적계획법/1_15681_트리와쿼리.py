@@ -3,11 +3,16 @@ input=lambda:stdin.readline().rstrip()
 setrecursionlimit(10**6)
 
 
-def g(e, bool, bf):
+def g(e, bf, bool):
+    global l
     s = num[e-1]if bool else 0
+
     for elm in tree[e]:
         if elm==bf:continue
-        s += max(g(elm, not bool, e), g(elm, False, e))
+        if bool:
+            s += g(elm, e, False)
+        else:
+            s += max(g(elm, e, True), g(elm, e, False))
     return s
 
 
@@ -19,4 +24,5 @@ for _ in range(n-1):
     tree[a].append(b)
     tree[b].append(a)
 
-print(max(g(1, True, 1), g(1, False, 1)))
+dp = [[0, 0]for _ in range()]
+print(g(1, 1, True))
