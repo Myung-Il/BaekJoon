@@ -33,15 +33,15 @@ if check(point[0], point[1], point[2], point[3]):
     try:
         x = ((x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
         y = ((x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
-        print(x, y)
+        print(x, y, 0)
     except:
         if point[0] > point[1]:
             point[0], point[1] = point[1], point[0]
         if point[2] > point[3]:
             point[2], point[3] = point[3], point[2]
         if point[1] == point[2]:
-            print(point[1][0], point[1][1])
+            print(point[1][0], point[1][1], 1)
         elif point[0] == point[3]:
-            print(point[0][0], point[0][1])
+            print(point[0][0], point[0][1], 2)
 else:
     print(0)
