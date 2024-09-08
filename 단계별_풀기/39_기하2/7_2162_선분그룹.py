@@ -44,4 +44,6 @@ for elm in result:
     d[elm] += 1
 
 print(len(d))
+
+d[-1] = 1
 print(max(d.values()))
