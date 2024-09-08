@@ -38,12 +38,13 @@ for idx in range(n):
     point[idx] = [[a1, b1], [a2, b2]]
 
 result = solve()
-d = {}
+l = [0]*(n+1)
 for elm in result:
-    if not d.get(elm):d[elm] = 0
-    d[elm] += 1
+    l[elm] += 1
 
-print(len(d))
-
-d[-1] = 1
-print(max(d.values()))
+s, mx = 0, max(l[:n])
+for idx in range(n):
+    if l[idx]:s+=1
+print(s+l[-1])
+print(mx if mx else 1)
+print(result)
