@@ -1,25 +1,22 @@
-def dfs(row, visit):
-    if row == N:
-        return 0
+import sys
+import math
+input = sys.stdin.readline
 
-    if visited[visit] != -1:
-        return visited[visit]
+n = int(input())
+s = [int(input()) for _ in range(n)]
+k = int(input())
+r = [[(j*10**len(str(s[i]))+s[i])%k for j in range(k)] for i in range(n)]
+dp = [[0]*k for _ in range(1<<n)]
+dp[0][0]=1
 
-    ret = 1000000000
-    for i in range(N):
-        if (visit & (1 << i)) != 0:  # 특정 비트가 켜저있다면
-            continue
-
-        ret = min(ret, dfs(row + 1, (visit | (1 << i))) + tasks[row][i])
-       
-    visited[visit] = ret
-    print(row, visit, visited)
-
-    return visited[visit]
-
-
-N = int(input())
-tasks = [list(map(int, input().split())) for _ in range(N)]
-
-visited = [-1] * (1 << N)
-print(dfs(0, 0))
+for b in range(1<<n):
+    for i in range(n):
+        if b&(1<<i): continue
+        for j in range(k):
+            dp[b|(1<<i)][r[i][j]]+=dp[b][j]
+p = dp[(1<<n)-1][0]
+q = sum(dp[(1<<n)-1])
+g = math.gcd(p,q)
+print("%d/%d"%(p//g,q//g))
+print(r)
+print(dp)
