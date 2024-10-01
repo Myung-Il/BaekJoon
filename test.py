@@ -1,22 +1,19 @@
-import sys
-import math
-input = sys.stdin.readline
+from sys import stdin
+input=lambda:stdin.readline().rstrip()
+
 
 n = int(input())
-s = [int(input()) for _ in range(n)]
 k = int(input())
-r = [[(j*10**len(str(s[i]))+s[i])%k for j in range(k)] for i in range(n)]
-dp = [[0]*k for _ in range(1<<n)]
-dp[0][0]=1
+dp = [[0]*(k+1) for _ in range(n+1)]
 
-for b in range(1<<n):
-    for i in range(n):
-        if b&(1<<i): continue
-        for j in range(k):
-            dp[b|(1<<i)][r[i][j]]+=dp[b][j]
-p = dp[(1<<n)-1][0]
-q = sum(dp[(1<<n)-1])
-g = math.gcd(p,q)
-print("%d/%d"%(p//g,q//g))
-print(r)
+for ni in range(n+1):
+    for ki in range(k+1):
+        if not ki:  dp[ni][ki] = 1
+        elif ki==1: dp[ni][ki] = ni
+        else:
+            dp[ni][ki] += dp[ni-1][ki]
+            dp[ni][ki] += dp[ni-2][ki-1] if ni!=n else dp[ni-3][ki-1]
+            dp[ni][ki] %= 1_000_000_003
+
 print(dp)
+print(dp[n][k])
