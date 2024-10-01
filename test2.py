@@ -12,11 +12,11 @@ rm = [[-1] * (sum(long)) for _ in range(n)]                # 조합들을 기록
 for i in range(n):                                         # 입력한만큼
     for j in range(sum(long)):                             # 최대 길이만큼
         rm[i][j] = (stack[i] * 10**j) % k                  # 조합을 만듬
-
+print(len(dp), len(dp[0]))
+print(rm)
 
 
 def dfs(L, visited, rest):      # 현재 길이, 방문, ?
-    print(L, visited, rest)
     if visited == (1 << n) - 1: # 전부 탐색하면
         if rest == 0: return 1  # ?
         else:         return 0  # ?
@@ -34,6 +34,7 @@ def dfs(L, visited, rest):      # 현재 길이, 방문, ?
 
 temp = dfs(0, 0, 0)
 F = factorial(n)
+print(dp, temp, F)
 if temp == 0: print('0/1')
 else:
     v = gcd(F, dp[0][0])
