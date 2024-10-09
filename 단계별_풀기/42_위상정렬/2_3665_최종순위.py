@@ -24,7 +24,7 @@ for _ in range(n):
 
 
     q = deque([elm for elm in ti if not v[elm]])
-    # 0을 찾을거임, 순서가 안 바뀐 얘, 이게 첫번째로 출력될 얘임
+    # 0을 찾을거임, 이게 첫번째로 출력될 얘임
 
     result = []
     while q: # 팀이 순환을 이루면 0이 없으니 알아서 q가 비게 됨
