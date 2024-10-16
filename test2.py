@@ -1,54 +1,21 @@
-from collections import deque
 import sys
 input = sys.stdin.readline
 
-for _ in range(int(input())):
-    # 작년 순위
-    n = int(input())
-    rank = list(map(int,input().split()))
-    cntLink = [-1] + [0]*n
-    link = [[] for _ in range(n+1)]
-    for i in range(n):
-        link[rank[i]] = rank[i+1:]
-        cntLink[rank[i]] = i
-    
-    # 순위 역전
-    for _ in range(int(input())):
-        a,b = map(int,input().split())
-        if a in link[b]:
-            link[b].remove(a)
-            link[a].append(b)
-            cntLink[a] -= 1
-            cntLink[b] += 1
-        else:
-            link[a].remove(b)
-            link[b].append(a)
-            cntLink[b] -= 1
-            cntLink[a] += 1
-    print(link)
-    print(cntLink)
-            
-    # 시작 노드
-    q = deque()
-    for i in range(1,n+1):
-        if not cntLink[i]:
-            q.append(i)
-    if not q:
-        # 시작 노드 부재, 사이클
-        print("IMPOSSIBLE")
-        continue
-    print(q)
-    # 위상 정렬
-    ans = []
-    while q:
-        v = q.popleft()
-        ans.append(v)
-        for i in link[v]:
-            cntLink[i] -= 1
-            if not cntLink[i]:
-                q.append(i)
-    if sum(cntLink) > -1:
-        # 사이클 존재
-        print("IMPOSSIBLE")
-    else:
-        print(*ans)
+log = 18
+M = int(input())
+f = [0]+list(map(int,input().split()))
+dp = [[f[i]] for i in range(M+1)]
+
+for j in range(1, log + 1):
+    for i in range(1, M + 1):
+        dp[i].append(dp[dp[i][j-1]][j-1])
+print(*dp, sep='\n')
+
+Q = int(input())
+for _ in range(Q):
+    n,x = map(int, input().split())
+    for b in range(log, -1, -1):
+        if n >= 1 << b:
+            n -= 1<<b
+            x = dp[x][b]
+    print(x)

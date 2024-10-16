@@ -1,3 +1,2 @@
-from collections import deque
-
-print(deque(map(int,input().split())))
+print(1 << 2)
+print(2**18)
