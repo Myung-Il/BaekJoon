@@ -1,101 +1,51 @@
 import sys
-from math import log2
-from collections import deque
- 
-N=int(sys.stdin.readline())   # 노드 갯수 입력
-logN=int(log2(N)+1)           # log
-print(logN)
-tree=[[] for _ in range(N+1)] # 트리
-for _ in range(N-1):
-    u,v,w=map(int,sys.stdin.readline().split())
-    tree[u].append([v,w]) # u <-w-> v
-    tree[v].append([u,w]) # v <-w-> u
+input = lambda:sys.stdin.readline().strip()
+v, e = map(int,input().split())     # 노드의 수와 간선의 수
 
+g = [[]for _ in range(v+1)]         # 그래프
+for _ in range(e):                  #
+    a, b = map(int,input().split()) # 두 관계 노드 입력
+    g[a].append(b)                  # 그래프 그리기
 
-p_list=[[0,0] for _ in range(N+1)] # 부모(부모, 댓가) 리스트
-depth=[0 for _ in range(N+1)]      # 깊이
-p_check=[True for _ in range(N+1)] # 방문
-#부모노드 저장
-q=deque()   # 덱
-q.append(1) # [1]
-while q:
-    a=q.popleft()       # 부모 노드 꺼내기
-    p_check[a]=False    # 방문 기록
-    for b,w in tree[a]: # 자식, 댓가
-        if p_check[b]:  # 방문 확인
-            p_list[b][0]=a # 부모노드 저장
-            p_list[b][1]=w # 부모노드까지의 거리 저장
-            q.append(b)         # 예제1 [ 1, 2, 4, 5, 3, 6 ]
-            depth[b]=depth[a]+1 # 깊이 설정
- 
- 
-#2^k번째 부모 노드와 2^k번째 부모 노드까지의 거리
-DP=[[[0,0] for _ in range(logN)] for _ in range(N+1)]
-#초기화
-for i in range(N+1):
-    DP[i][0][0]=p_list[i][0]
-    DP[i][0][1]=p_list[i][1]
- 
- 
-#희소테이블 완성하기
-for j in range(1,logN):
-    for i in range(1,N+1):
-        DP[i][j][0]=DP[DP[i][j-1][0]][j-1][0]
-        if DP[i][j][0]!=0:
-            DP[i][j][1] = DP[i][j-1][1] + DP[ DP[i][j-1][0] ][j-1][1]
- 
- 
-M=int(sys.stdin.readline())
-for _ in range(M):
-    Q=list(map(int,sys.stdin.readline().split()))
-    # 깊이차이
-    a=Q[1]
-    b=Q[2]
-    if depth[a] < depth[b]:
-        a, b = b, a
- 
-    dif = depth[a] - depth[b]
-    # 레벨맞추기
-    for i in range(logN):
-        if dif & 1 << i:
-            a = DP[a][i][0]
-    if a==b:
-        LCA=a
-    else:
-    #최소공통조상 찾기
-        for i in range(logN-1,-1,-1):
-            if DP[a][i][0]!=DP[b][i][0]:
-                a=DP[a][i][0]
-                b=DP[b][i][0]
-        #최소공통조상
-        LCA = DP[a][0][0]
-    #최소공통조상의 레벨
-    lca_depth=depth[LCA]
-    if Q[0]==1:
-        sum = 0
-        dif_a=depth[Q[1]]-lca_depth
-        dif_b=depth[Q[2]]-lca_depth
-        for i in range(logN):
-            if dif_a & 1<<i:
-                sum +=DP[Q[1]][i][1]
-                Q[1]=DP[Q[1]][i][0]
- 
-            if dif_b & 1<<i:
-                sum +=DP[Q[2]][i][1]
-                Q[2]=DP[Q[2]][i][0]
-        print(sum)
- 
-    elif Q[0]==2:
-        gep=depth[Q[1]]-lca_depth+1
-        if Q[3]<=gep:
-            for i in range(logN):
-                if Q[3]-1 & 1<<i:
-                    Q[1]=DP[Q[1]][i][0]
-            print(Q[1])
- 
-        else:
-            Q[3] = depth[Q[2]]-Q[3]+depth[Q[1]]-2*lca_depth+1
-            for i in range(logN):
-                if Q[3] & 1<<i:
-                    Q[2]=DP[Q[2]][i][0]
-            print(Q[2])
+d = [-1] * (v+1)         # 거리?
+stk = []                 # 스택
+visit = [False] * (v+1) # 시작 스택인지 확인
+id = 0                   # ?
+
+def dfs(cur):          # 현재 노드를 받아옴
+    global id          # ?
+    id += 1            # ? 갱신
+    d[cur] = id        # 거리?에 ?를 받음
+    stk.append(cur)    # 스택에 현재 위치를 지정
+    visit[cur] = True # 시작 스택 기록
+    
+    p = id        # 부모 노드에 현재 노드 거리? 기록
+    for nx in g[cur]: # 현재 노드의 이웃 노드 받음
+        if d[nx] == -1:p = min(p, dfs(nx)) # 거리?가 없다면 
+        elif visit[nx]:p = min(p, d[nx])
+        
+    if p == d[cur]:
+        s = []
+        while 1:
+            node = stk.pop()
+            visit[node] = False
+            s.append(node)
+            if cur == node: break
+        print(id, "==", s)
+    return p
+
+for idx in range(1, v+1):     # 노드 1번부터 시작
+    if d[idx] == -1: dfs(idx) # 거리?가 시작조차 안했다면
+print(d, id) 
+'''
+7 9
+1 4
+4 5
+5 1
+1 6
+6 7
+2 7
+7 3
+3 7
+7 2
+'''
