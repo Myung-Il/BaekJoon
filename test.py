@@ -1,43 +1,71 @@
+from collections import defaultdict, deque
 import sys
+sys.setrecursionlimit(600000)
 input = sys.stdin.readline
-sys.setrecursionlimit(10**7)
 
-def DFS(now):
-    global id
-    stack.append(now)
-    visited[now] = nowid = id
-    for next in graph[now]:
-        if not visited[next]:
-            id += 1
-            DFS(next)
-        if visited[next] <= nowid:
-            indegree[next] -= 1
-            visited[now] = min(visited[now],visited[next])
-            print(now+1, "===", next+1)
-    if visited[now] == nowid:
-        scc.append([]); sccindegree.append(0)
-        while 1:
-            x = stack.pop()
-            scc[-1].append(x)
-            sccindegree[-1] += indegree[x]
-            visited[x] = 1e7
-            if x == now:
-                break
-        print(now, indegree, sccindegree)
-        
-for _ in range(int(input())):
-    N,M = map(int,input().split())
-    
-    graph = [[] for i in range(N)]; indegree = [0]*N
-    for _ in range(M):
-        a,b = map(int,input().split())
-        graph[a-1].append(b-1)
-        indegree[b-1] += 1
-    
-    visited = [0]*N
-    stack,scc,sccindegree = [],[],[]
-    for i in range(N):
-        if not visited[i]:
-            id = 1
-            DFS(i)
-    print(sccindegree.count(0))
+n, m = map(int, input().split())
+graph = defaultdict(list)
+for _ in range(m) :
+    a, b = map(int, input().split())
+    graph[a].append(b)
+raw_cash = [0] + [int(input()) for _ in range(n)]
+
+visit = [-1]*(n+1)
+scc_finished = [-1]*(n+1)
+count = 0
+id = 0
+stk = []
+
+def scc(node) :
+    global id, count
+    visit[node] = ret = id
+    id += 1
+    stk.append(node)
+    for nxt in graph[node] :
+        if scc_finished[nxt] > -1 :continue
+        if visit[nxt] == -1 :scc(nxt)
+        visit[node] = min(visit[node], visit[nxt])
+    if ret == visit[node] :
+        while stk :
+            n = stk.pop()
+            scc_finished[n] = count
+            if n == node :break
+        count += 1
+
+for i in range(1, n+1) :
+    if scc_finished[i] == -1 :
+        scc(i)
+
+start, restaurant = map(int, input().split())
+w = [0]*count
+edge_list = [set() for _ in range(count)]
+max_cash = [0]*count
+finish = [False]*count
+for r in list(map(int, input().split())) :
+    finish[scc_finished[r]] = True
+result = 0
+
+for i in range(1, n+1) :
+    _i = scc_finished[i]
+    w[_i] += raw_cash[i]
+    for j in graph[i] :
+        if _i != scc_finished[j] :
+            edge_list[_i].add(scc_finished[j])
+    if i == start : s = _i
+
+def bfs(node) :
+    max_cash[node] = w[node]
+    q = deque([node])
+    while q :
+        n = q.popleft()
+        for nxt in edge_list[n] :
+            if max_cash[nxt] < max_cash[n] + w[nxt] :
+                max_cash[nxt] = max_cash[n] + w[nxt]
+                q.append(nxt)
+
+bfs(s)
+for i in range(count) :
+    if finish[i] :
+        result = max(result, max_cash[i])
+print(result)
+print(max_cash)
