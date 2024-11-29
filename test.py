@@ -1,5 +1,3 @@
-l = [5]*3
-print(l)
-
-l[0] = 0
-print(l)
+n = 2_000_000
+print(n)
+print(2**21)
