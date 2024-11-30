@@ -2,25 +2,32 @@ from sys import stdin
 input = lambda:stdin.readline().rstrip()
 
 
-class Node:
-    def __init__(self, idx):
-        self.idx = idx
-        self.left, self.right = None, None
+def init(node, start, end):
+    if start==end:tree[node] = 1
+    else:
+        mid = (start+end)//2
+        init(node*2, start, mid)
+        init(node*2+1, mid+1, end)
+        tree[node] = tree[node*2] + tree[node*2+1]
+
+def search(node, start, end, find):
+    tree[node] -= 1
+    if start==end:return end
+    mid = (start+end)//2
+    return search(node*2, start, mid, find)if tree[node*2]>=find else search(node*2+1, mid+1, end, find-tree[node*2])
 
 
 n, k = map(int,input().split())
-l = [Node(elm+1) for elm in range(n)]
-for idx in range(n):
-    l[idx-1].left  = l[idx-2]
-    l[idx-1].right = l[idx]
+l = [idx+1 for idx in range(n)]
+tree = [0]*n*4
 
+init(1, 1, n)
 result = []
-elm = l[-1]
-while elm!=elm.right:
-    for _ in range(k):elm = elm.right
-    elm.left.right = elm.right
-    elm.right.left = elm.left
-    result.append(elm.idx)
+pin = k
 
 print('<', end='')
+for _ in range(n):
+    result.append(search(1, 1, n, pin))
+    pin = pin+k-1
+    while tree[1]and pin>tree[1]:pin -= tree[1]
 print(*result, sep=', ', end='>')
