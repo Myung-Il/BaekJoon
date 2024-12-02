@@ -1,4 +1,8 @@
-for i in range(3):
-    print(123)
-    continue
-else:print(0)
+def f(i):return i&-i
+
+a = 0
+print("[", a:=a+1, f(a), "]", a+f(a))
+print("[", a:=a+1, f(a), "]", a+f(a))
+print("[", a:=a+1, f(a), "]", a+f(a))
+print("[", a:=a+1, f(a), "]", a+f(a))
+print("[", a:=a+1, f(a), "]", a+f(a))
