@@ -5,11 +5,9 @@ input = lambda:stdin.readline().rstrip()
 n = int(input())
 queue = []
 
-for _ in range(n):
-    for elm in input().split():
-        q.heappush(queue, -int(elm))
+for idx in range(n):
+    for elm in list(map(int, input().split())):
+        q.heappush(queue, elm)
+        if idx>0:q.heappop(queue)
 
-for _ in range(n):
-    result = q.heappop(queue)
-
-print(-result)
+print(queue[0])
