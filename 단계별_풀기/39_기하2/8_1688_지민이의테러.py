@@ -46,8 +46,11 @@ for human in people:
     for idx in range(-1, n-1):
         first, second = protect[idx], protect[idx+1]
         outpoint = 1_000_001, human[1]+1
+        result = solve(human, outpoint, first, second)
 
-        if cross(human, outpoint, first, second)==human:count=1;break
-        count += solve(human, outpoint, first, second)
+        if result and cross(human, outpoint, first, second)==human:
+            count=1
+            break
+        count += result
     if count%2:print(1)
     else:print(0)
