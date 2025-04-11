@@ -54,20 +54,23 @@ def rotatingCalipers(stack):
     stksize = len(stack)
     if stksize==2:return length(*stack[0], *stack[1])
 
-    mxlength = 0      # 두 좌표 사이의 최대 길이
-    i, j = 1, 2       # 0번째부터 시작하는 각 선분의 마지막 위치
-    while 0!=i: # 시작 선이 아직 한바퀴를 덜 돌았다면
-        i %= stksize
-        j %= stksize
+    mxlength = 0
+    i, j = 1, 2
+    while True:
         a, b = stack[i-1], stack[i]
         c, d = stack[j-1], stack[j]
 
-        diff = (b[0]-c[0], b[1]-c[1])      # 두 선분과의 거리
-        upd = (d[0]+diff[0], d[1]+diff[1]) # 두 좌표 연결
+        diff = (b[0]-c[0], b[1]-c[1])
+        upd = (d[0]+diff[0], d[1]+diff[1])
 
-        mxlength = max(mxlength, length(*a, *c)) # 최대 길이 설정
-        if i!=j+1 and ccw(*a, *b, *upd): j += 1 # 선분이 나아간다면
-        else:                            i += 1 # 선분이 돌아온다면
+        mxlength = max(mxlength, length(*a, *c))
+
+        res = ccw(*a, *b, *upd)
+        if res>=0: j = (j+1)%stksize
+        else:
+            i = (i+1)%stksize
+            if i==1:break
+
     return mxlength
 
 
