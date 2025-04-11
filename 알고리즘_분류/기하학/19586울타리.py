@@ -63,9 +63,7 @@ def rotatingCalipers(stack):
         diff = (b[0]-c[0], b[1]-c[1])
         upd = (d[0]+diff[0], d[1]+diff[1])
 
-        for pos1 in (a, b):
-            for pos2 in (c, d):
-                mxlength = max(mxlength, length(*pos1, *pos2))
+        mxlength = max(mxlength, length(*a, *c))
 
         res = ccw(*a, *b, *upd)
         if res>=0: j = (j+1)%stksize
