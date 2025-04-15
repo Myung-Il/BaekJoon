@@ -23,7 +23,7 @@ def length(x1, y1, x2, y2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
 
 
-def convexHull():         # 볼록 껍질 함수
+def grahamScan():         # 볼록 껍질 함수
     stack, queue = [], [] # 시작점을 기준으로 점들 스택, 세점이 이루는 각도 큐
     x, y = points[0]      # 시작 점
 
@@ -51,33 +51,16 @@ def convexHull():         # 볼록 껍질 함수
     return stack
 
 def rotatingCalipers(stack):
-    stksize = len(stack)
-    if stksize==2:return length(*stack[0], *stack[1])
+    stt, mid = stack.index(points[-1])
 
-    mxlength = 0
-    i, j = 1, 2
-    while True:
-        a, b = stack[i-1], stack[i]
-        c, d = stack[j-1], stack[j]
 
-        diff = (b[0]-c[0], b[1]-c[1])
-        upd = (d[0]+diff[0], d[1]+diff[1])
 
-        mxlength = max(mxlength, length(*a, *c))
-
-        res = ccw(*a, *b, *upd)
-        if res>=0: j = (j+1)%stksize
-        else:
-            i = (i+1)%stksize
-            if i==1:break
-
-    return mxlength
 
 
 n = int(input())
 points = [tuple(map(int,input().split()))for _ in range(n)]
 points.sort(key=lambda pos:(pos[1], pos[0]))
 
-con = convexHull()
+con = grahamScan()
 rot = rotatingCalipers(con)
 print(rot)
