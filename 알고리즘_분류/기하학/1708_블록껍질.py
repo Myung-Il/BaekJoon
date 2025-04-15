@@ -22,7 +22,7 @@ def angle(ax, ay, bx, by, cx, cy):
 def length(x1, y1, x2, y2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
 
-def convexHull():         # 볼록 껍질 함수
+def grahamScan():         # 볼록 껍질 함수
     stack, queue = [], [] # 시작점을 기준으로 점들 스택, 세점이 이루는 각도 큐
     x, y = points[0]      # 시작 점
 
@@ -53,4 +53,4 @@ def convexHull():         # 볼록 껍질 함수
 n = int(input())
 points = [tuple(map(int,input().split()))for _ in range(n)]
 points.sort(key=lambda pos:(pos[1], pos[0]))
-print(len(convexHull()))
+print(len(grahamScan()))
