@@ -29,10 +29,10 @@ def rotatingCalipers(lower, upper):
     stack = lower+upper
     size = len(stack)
 
-    li, ui = 1, len(lower)+1
+    li, ui = 0, len(lower)
     for _ in range(size):
-        a, b = stack[(li-1)%size], stack[li%size]
-        c, d = stack[(ui-1)%size], stack[ui%size]
+        a, b = stack[li%size], stack[(li+1)%size]
+        c, d = stack[ui%size], stack[(ui+1)%size]
         
         point1 = b[0]-a[0], b[1]-a[1]
         point2 = d[0]-c[0], d[1]-c[1]
