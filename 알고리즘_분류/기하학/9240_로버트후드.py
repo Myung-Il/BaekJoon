@@ -36,7 +36,6 @@ def rotatingCalipers(lower, upper):
         point1 = b[0]-a[0], b[1]-a[1]
         point2 = d[0]-c[0], d[1]-c[1]
 
-        print(ccw(*point1, 0, 0, *point2))
         if ccw(*point1, 0, 0, *point2)>0: li = (li+1)%size
         else: ui = (ui+1)%size
         mx = max(mx, distance(*stack[li], *stack[ui]))
@@ -49,5 +48,4 @@ points.sort()
 
 con1, con2 = monotoneChain()
 rot = rotatingCalipers(con1, con2)
-if n==2:print(distance(*con1[0], *con2[0]))
-else: print(rot)
+print(rot)
