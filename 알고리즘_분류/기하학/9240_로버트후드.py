@@ -4,7 +4,7 @@ input=lambda:stdin.readline().rstrip()
 def ccw(x1, y1, x2, y2, x3, y3):
     return x1*y2+x2*y3+x3*y1 -x2*y1-x3*y2-x1*y3
 
-def length(x1, y1, x2, y2):
+def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 
 
@@ -26,20 +26,20 @@ def monotoneChain():
 def rotatingCalipers(lower, upper):
     stack = lower+upper
     size = len(stack)
-
+    
     li, ui = 0, len(lower)
-    mx = length(*stack[li], *stack[ui])
+    mx = distance(*stack[li], *stack[ui])
     for _ in range(size):
         a, b = stack[li], stack[(li+1)%size]
         c, d = stack[ui], stack[(ui+1)%size]
         
         point1 = b[0]-a[0], b[1]-a[1]
         point2 = d[0]-c[0], d[1]-c[1]
-        
-        if ccw(*point1, 0, 0, *point2): li = (li+1)%size
+
+        print(ccw(*point1, 0, 0, *point2))
+        if ccw(*point1, 0, 0, *point2)>0: li = (li+1)%size
         else: ui = (ui+1)%size
-        
-        mx = max(mx, length(*stack[li], *stack[ui]))
+        mx = max(mx, distance(*stack[li], *stack[ui]))
     return mx
         
 
@@ -49,4 +49,5 @@ points.sort()
 
 con1, con2 = monotoneChain()
 rot = rotatingCalipers(con1, con2)
-print(rot)
+if n==2:print(distance(*con1[0], *con2[0]))
+else: print(rot)
