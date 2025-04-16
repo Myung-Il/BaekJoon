@@ -68,25 +68,29 @@ def otherPoint(stack, flag):
         dis = height(*stack[lp], *stack[rp], *point)
         if mx<dis: il, mx = idxlower, dis
         
-    for idxupper in range(rp, size+lp):
-        point = stack[idxupper%size]
+    mx = -1
+    for idxupper in range(rp+1, size):
+        point = stack[idxupper]
         dis = height(*stack[lp], *stack[rp], *point)
-        if mx<dis: iu, mx = idxupper%size, dis
+        if mx<dis: iu, mx = idxupper, dis
         
     return stack[lp], stack[il], stack[rp], stack[iu]
 
 def solve(point):
-    mxlen, flag = 0, 0
+    square = []
     for idx in range(4):
-        a, b = point[idx-1], point[idx]
-        dis = distance(*a, *b)
-        if mxlen<dis: mxlen, flag = dis, idx
-    
-    print(mxlen)
-    case1 = height(*point[flag-1], *point[flag], *point[(flag+1)%4])
-    case2 = height(*point[flag-1], *point[flag], *point[(flag+2)%4])
-    
-    return max(case1, case2, 1)*mxlen
+        dis = distance(*point[idx%4], *point[(idx+1)%4])
+        
+        case1 = height(*point[idx%4], *point[(idx+1)%4], *point[(idx+2)%4])
+        case2 = height(*point[idx%4], *point[(idx+1)%4], *point[(idx+3)%4])
+        
+        square.append((dis, max(case1, case2)))
+    square.sort()
+
+    print(point)
+    print(square)
+    res = square[3]
+    return res[0]*2 + res[1]*2
     
 
 n = int(input())
