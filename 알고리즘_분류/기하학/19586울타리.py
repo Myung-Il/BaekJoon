@@ -1,80 +1,99 @@
 from sys import stdin
-import math
-import heapq as hq
 input=lambda:stdin.readline().rstrip()
 INF = float("inf")
 
 def ccw(x1, y1, x2, y2, x3, y3):
     return x1*y2+x2*y3+x3*y1 -x2*y1-x3*y2-x1*y3
 
-def angle(ax, ay, bx, by, cx, cy):
-    bax, bay = ax-bx, ay-by # 벡터 BA
-    bcx, bcy = cx-bx, cy-by # 벡터 BC
+def distance(x1, y1, x2, y2):
+    return ((x1-x2)**2+(y1-y2)**2)**0.5
 
-    # 내적과 외적
-    dot = bax*bcx + bay*bcy
-    det = bax*bcy - bay*bcx
+def area(x1, y1, x2, y2, x3, y3):
+    return abs(x1*(y2-y3) +x2*(y3-y1) +x3*(y1-y2))/2
 
-    theta_rad = math.atan2(-det, dot)
-    theta_deg = math.degrees(theta_rad)
-    return theta_deg % 360
+def height(x1, y1, x2, y2, px, py):
+    underline = distance(x1, y1, x2, y2)
+    if not underline:return 0
+    
+    square = area(x1, y1, x2, y2, px, py)*2
+    return square/underline
 
-def length(x1, y1, x2, y2):
-    return math.sqrt((x1-x2)**2+(y1-y2)**2)
 
-def convexHull():         # 볼록 껍질 함수
-    stack, queue = [], [] # 시작점을 기준으로 점들 스택, 세점이 이루는 각도 큐
-    x, y = points[0]      # 시작 점
+def monotoneChain():
+    upper, lower = [], []
+    
+    for point in points:
+        while len(lower)>1 and ccw(*lower[-2], *lower[-1], *point) <= 0:lower.pop()
+        lower.append(point)
+    lower.pop()
+    
+    for point in reversed(points):
+        while len(upper)>1 and ccw(*upper[-2], *upper[-1], *point) <= 0:upper.pop()
+        upper.append(point)
+    upper.pop()
 
-    for point in points[1:]:                                     # 세 좌표 간의 각도를 계산하고
-        hq.heappush(queue, (angle(*point, x, y, x+1, y), point)) # 힙 트리로 순서를 만듬
-    hq.heappush(queue, (360, (x, y)))
-    stack.append((x, y))               # 스택에 첫 점을 넣고
-    stack.append(hq.heappop(queue)[1]) # ccw를 하기 위해서 다음 점을 찾아서 넣음
+    return lower, upper
 
-    while queue:                           # 모든 점들을 확인 함
-        stack.append(hq.heappop(queue)[1]) # ccw를 하기 위해서 점 3개가 필요하고
+def rotatingCalipers(lower, upper):
+    stack = lower+upper
+    size = len(stack)
+    
+    li, ui = 0, len(lower)
+    mxnum = distance(*stack[li], *stack[ui])
+    mxpoint = li, ui
+    for _ in range(size):
+        a, b = stack[li], stack[(li+1)%size]
+        c, d = stack[ui], stack[(ui+1)%size]
+        
+        point1 = b[0]-a[0], b[1]-a[1]
+        point2 = d[0]-c[0], d[1]-c[1]
 
-        while len(stack)>2:
-            l1 = length(*stack[-3], *stack[-2]) # 세 점이 일직선 상에 있을 때
-            l2 = length(*stack[-3], *stack[-1]) # 더 긴 것을 스택에 넣음
-            res = ccw(*stack[-3], *stack[-2], *stack[-1]) # 방향 확인
+        if ccw(*point1, 0, 0, *point2)>0: li = (li+1)%size
+        else: ui = (ui+1)%size
+        
+        dis = distance(*stack[li], *stack[ui])
+        if mxnum<dis:
+            mxnum = dis
+            mxpoint = li, ui
+    return mxpoint
 
-            if res>0:break
-            elif res<0 or (res==0 and l1<l2):
-                point = stack.pop()
-                stack.pop()
-                stack.append(point)
-            else:break
-    stack.pop()
-    return stack
+def otherPoint(stack, flag):
+    size = len(stack)
+    lp, rp = flag[0], flag[1]
+      
+    il, iu = 0, 0
+    mx = -1
+    for idxlower in range(lp+1, rp):
+        point = stack[idxlower]
+        dis = height(*stack[lp], *stack[rp], *point)
+        if mx<dis: il, mx = idxlower, dis
+        
+    for idxupper in range(rp, size+lp):
+        point = stack[idxupper%size]
+        dis = height(*stack[lp], *stack[rp], *point)
+        if mx<dis: iu, mx = idxupper%size, dis
+        
+    return stack[lp], stack[il], stack[rp], stack[iu]
 
-def rotatingCalipers(stack):
-    mxlength = 0
-    stksize = len(stack)
-
-    if stksize==2:return length(*stack[0], *stack[1])
-
-    i, j = 1, 2
-    while 0!=i:
-        a, b = stack[i-1], stack[i]
-        c, d = stack[j-1], stack[j]
-
-        diff = (b[0]-c[0], b[1]-c[1])
-        upd = (d[0]+diff[0], d[1]+diff[1])
-
-        mxlength = max(mxlength, length(*a, *c))
-
-        res = ccw(*a, *b, *upd)
-        if res>=0: j = (j+1)%stksize
-        else:      i = (i+1)%stksize
-
-    return mxlength
-
+def solve(point):
+    mxlen, flag = 0, 0
+    for idx in range(4):
+        a, b = point[idx-1], point[idx]
+        dis = distance(*a, *b)
+        if mxlen<dis: mxlen, flag = dis, idx
+    
+    print(mxlen)
+    case1 = height(*point[flag-1], *point[flag], *point[(flag+1)%4])
+    case2 = height(*point[flag-1], *point[flag], *point[(flag+2)%4])
+    
+    return max(case1, case2, 1)*mxlen
+    
 
 n = int(input())
 points = [tuple(map(int,input().split()))for _ in range(n)]
-points.sort(key=lambda pos:(pos[1], pos[0]))
+points.sort()
 
-con = convexHull()
-print(rotatingCalipers(con))
+con1, con2 = monotoneChain()
+rot = rotatingCalipers(con1, con2)
+point = otherPoint(con1+con2, rot)
+print(solve(point))
