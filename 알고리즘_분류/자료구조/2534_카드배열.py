@@ -15,33 +15,28 @@ def topologySort(type, range):
             hq.heappush(graph[a], b*type)
         indegree[b] += 1
 
-    result = []     # 결과값
+    result = set()
     queue = deque() # 큐
-    s = set()
     for idx in range:
-        if not indegree[idx] and idx not in s:
-            group = []
+        if not indegree[idx] and idx not in result:
             queue.append(idx)
             while queue:
                 x = queue.popleft() # 현재 위치
-                s.add(x)
-                group.append(x)     # 위치 추가
+                result.add(x)
                 if not graph.get(x): continue
                 for g in graph[x]:
                     node = g*type
                     indegree[node] -= 1    # 차수 감소
                     if indegree[node]==0:  # 더 이상 연결된 부모가 없다면,
                         queue.append(node) # 스스로 들고 일어남
-            result.append(group)
     return result
 
-def solve(list, diff=0):
+def solve(group, diff=0):
     result = 0
     order = k-1
-    for group in list:
-        for elm in group:
-            result += (elm+diff)*n**order
-            order -= 1
+    for elm in group:
+        result += (elm+diff)*n**order
+        order -= 1
     return result
 
 n, k, p = map(int, input().split())
