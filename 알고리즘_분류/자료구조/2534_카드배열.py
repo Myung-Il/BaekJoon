@@ -1,8 +1,8 @@
 from sys import stdin
-from collections import deque
+import heapq as hq
 input = lambda:stdin.readline().rstrip()
 
-def topologySort(load, bool, diff=0):
+def topologySort(load, bool, diff=0, type=1):
     # 위상 정렬렬
     indegree = [0]*(k+1) # 부모 수
     graph = dict()       # 진입
@@ -15,12 +15,12 @@ def topologySort(load, bool, diff=0):
 
     result = 0
     order = k-1
-    queue = deque() # 큐
+    queue = [] # 큐
     for idx in sorted(range(0, k), reverse=bool):
         if not indegree[idx]:
-            queue.append(idx)
+            hq.heappush(queue, idx*type)
             while queue:
-                x = queue.popleft() # 현재 위치
+                x = hq.heappop(queue)*type # 현재 위치
                 result += (x+diff)*n**order
                 order -= 1
                 if not graph.get(x): continue
@@ -28,14 +28,13 @@ def topologySort(load, bool, diff=0):
                     node = g
                     indegree[node] -= 1    # 차수 감소
                     if indegree[node]==0:  # 더 이상 연결된 부모가 없다면,
-                        queue.append(node) # 스스로 들고 일어남
+                        hq.heappush(queue, node*type) # 스스로 들고 일어남
                         indegree[node] -= 1
-                
     return result
 
 n, k, p = map(int, input().split())
 load = [tuple(map(int, input().split()))for _ in range(p)]
 
 mn = topologySort(load, False)
-mx = topologySort(load, True, n-k)
+mx = topologySort(load, True, n-k, -1)
 print(mx-mn)
