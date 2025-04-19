@@ -5,12 +5,11 @@ input = lambda:stdin.readline().rstrip()
 def topologySort(load):
     # 위상 정렬렬
     indegree = [0]*(k+1) # 부모 수
-    graph = dict()       # 진입
+    graph = [[]for _ in range(k+1)]
 
     load = sorted(load)
     for a, b in load:
-        if graph.get(a):graph[a].append(b)
-        else: graph[a] = [b]
+        graph[a].append(b)
         indegree[b] += 1
 
     result = []
@@ -18,16 +17,17 @@ def topologySort(load):
     for idx in range(0, k):
         if not indegree[idx]:
             hq.heappush(queue, idx)
-            while queue:
-                x = hq.heappop(queue) # 현재 위치
-                result.append(x)
-                if not graph.get(x): continue
-                for g in graph[x]:
-                    node = g
-                    indegree[node] -= 1    # 차수 감소
-                    if indegree[node]==0:  # 더 이상 연결된 부모가 없다면,
-                        hq.heappush(queue, node) # 스스로 들고 일어남
-                        indegree[node] -= 1
+
+    while queue:
+        x = hq.heappop(queue) # 현재 위치
+        result.append(x)
+        if not graph[x]: continue
+        for g in graph[x]:
+            node = g
+            indegree[node] -= 1    # 차수 감소
+            if indegree[node]==0:  # 더 이상 연결된 부모가 없다면,
+                hq.heappush(queue, node) # 스스로 들고 일어남
+                indegree[node] -= 1
     return result
 
 def solve(group, diff=0):
