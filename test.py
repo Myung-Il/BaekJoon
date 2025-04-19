@@ -1,19 +1,58 @@
-import math
+from sys import stdin
+import heapq as hq
+from collections import deque
+input = lambda:stdin.readline().rstrip()
 
-def angle(ax, ay, bx, by, cx, cy):
-    bax, bay = ax-bx, ay-by # 벡터 BA
-    bcx, bcy = cx-bx, cy-by # 벡터 BC
+def topologySort(type):
+    check = [1]*k
 
-    # 내적과 외적
-    dot = bax*bcx + bay*bcy
-    det = bax*bcy - bay*bcx
+    degree = dict()
+    nums = dict()
 
-    theta_rad = math.atan2(-det, dot)
-    theta_deg = math.degrees(theta_rad)
-    return theta_deg % 360
+    topology = []
+    for a, b in load:
+        # 위상 정렬
+        # 가는 방향
+        if degree.get(a):
+            hq.heappush(degree[a], b*type)
+        else:
+            degree[a] = []
+            hq.heappush(degree[a], b*type)
 
-a = -1, 0
-b = 0, 0
-c = 1, 2
+        # 받는 방향
+        if nums.get(b):
+            hq.heappush(nums[b], a*type)
+        else:
+            check[b] = 0
+            nums[b] = []
+            hq.heappush(nums[b], a*type)
 
-print(angle(*a, *b, *c))
+    for idx in range(k):
+        if check[idx]:
+            group = []
+            queue = deque()
+            queue.append(idx)
+            while queue:
+                x = queue.popleft()
+                group.append(x)
+                if not degree.get(x):continue
+                for elm in degree[x]:
+                    hq.heappop(nums[elm])
+                    if not nums[elm]:queue.append(elm)
+            topology.append(group)
+    return topology, type
+
+def solve(list, diff):
+    result = 0
+    order = k-1
+    for group in list:
+        for elm in group:
+            result += (elm+diff)*n**order
+            order -= 1
+    return result
+
+n, k, p = map(int, input().split())
+load = list(map(int, input().split()))
+
+print(solve(topologySort(1)))
+print(solve(topologySort(-1)))
