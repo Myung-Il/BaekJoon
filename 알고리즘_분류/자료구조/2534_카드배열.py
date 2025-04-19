@@ -17,13 +17,13 @@ val = [0] * k # 각 위치의 카드값 (초기값은 나중에 설정)
 
 for _ in range(p): # 위상 정렬
     a, b = map(int, input().split()) # Ca > Cb
-    gph_1[b].append(a) # 역방향?
-    gph_2[a].append(b) # 순방향?
+    gph_1[b].append(a) # 역방향 = 최대를 구함
+    gph_2[a].append(b) # 순방향 = 최소를 구함
+    # 왜 그러는지는 이해가 안됨
+    # 위상정렬은 더러운게 맞아
+
     d_1[a] += 1
     d_2[b] += 1
-
-print(gph_1, d_1)
-print(gph_2, d_2)
 
 # 최대값 위상정렬
 pq = [i for i in range(k) if d_1[i] == 0]
