@@ -7,8 +7,9 @@ def topologySort(load):
     indegree = [0]*(k+1) # 부모 수
     graph = [[]for _ in range(k+1)]
 
-    load = sorted(load)
+    load = sorted(load, reverse=True)
     for a, b in load:
+        if indegree[b]:continue
         graph[a].append(b)
         indegree[b] += 1
 
@@ -17,17 +18,16 @@ def topologySort(load):
     for idx in range(0, k):
         if not indegree[idx]:
             hq.heappush(queue, idx)
+    
+    print(indegree)
+    print(graph)
+    print(queue)
 
     while queue:
         x = hq.heappop(queue) # 현재 위치
         result.append(x)
         if not graph[x]: continue
-        for g in graph[x]:
-            node = g
-            indegree[node] -= 1    # 차수 감소
-            if indegree[node]==0:  # 더 이상 연결된 부모가 없다면,
-                hq.heappush(queue, node) # 스스로 들고 일어남
-                indegree[node] -= 1
+        for g in graph[x]:hq.heappush(queue, g)
     return result
 
 def solve(group, diff=0):
@@ -46,4 +46,5 @@ group = topologySort(load)
 mn = solve(group)
 mx = solve(group, n-k)
 
+print(mn, mx)
 print(mx-mn)
