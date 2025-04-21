@@ -48,4 +48,5 @@ points.sort()
 
 con1, con2 = monotoneChain()
 rot = rotatingCalipers(con1, con2)
-print(rot)
+if n==2:print(distance(*con1[0], *con2[0]))
+else: print(rot)
