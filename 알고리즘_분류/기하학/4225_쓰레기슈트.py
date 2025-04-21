@@ -8,25 +8,13 @@ def ccw(x1, y1, x2, y2, x3, y3):
 def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 
-def height(x1, y1, x2, y2, x3, y3):
-    px1, py1 = x1-x2, y1-y2
-    px2, py2 = x3-x2, y3-y2
+def height(x1, y1, x2, y2, px, py):
+    ax, ay = px - x1, py - y1
+    bx, by = x2 - x1, y2 - y1
 
-    cross = abs(px1*py2 - py1*px2)
-    base_len = (px2**2 + py2**2) ** 0.5
-    return cross / base_len
-
-def angle(ax, ay, bx, by, cx, cy):
-    bax, bay = ax-bx, ay-by # 벡터 BA
-    bcx, bcy = cx-bx, cy-by # 벡터 BC
-
-    # 내적과 외적
-    dot = bax*bcx + bay*bcy
-    det = bax*bcy - bay*bcx
-
-    theta_rad = math.atan2(-det, dot)
-    theta_deg = math.degrees(theta_rad)
-    return theta_deg % 360
+    cross = abs(ax*by - ay*bx)
+    base = ((bx)**2 + (by)**2)**0.5
+    return cross/base
 
 def ceil2(x):
     exm = x*100
@@ -70,8 +58,7 @@ while True:
         for idx2 in range(idx1+1, idx1+size-1):
             p3 = stack[idx2%size]
 
-            if angle(*p1, *p2, *p3)>90:continue
-            length = max(length, height(*p3, *p1, *p2))
-        result = min(result, length)
+            length = max(length, height(*p1, *p2, *p3))
+        if length:result = min(result, length)
     
     print(f"Case {turn}: {ceil2(result):0.2f}")

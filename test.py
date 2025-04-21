@@ -1,16 +1,12 @@
-import math
+def height(x1, y1, x2, y2, px, py):
+    ax, ay = px - x1, py - y1
+    bx, by = x2 - x1, y2 - y1
 
-def angle(ax, ay, bx, by, cx, cy):
-    bax, bay = ax-bx, ay-by # 벡터 BA
-    bcx, bcy = cx-bx, cy-by # 벡터 BC
+    cross = abs(ax*by - ay*bx)
+    base = ((bx)**2 + (by)**2)**0.5
+    return cross/base
 
-    # 내적과 외적
-    dot = bax*bcx + bay*bcy
-    det = bax*bcy - bay*bcx
 
-    theta_rad = math.atan2(-det, dot)
-    theta_deg = math.degrees(theta_rad)
-    return theta_deg % 360
-
-a = -1, 1
-print(angle(*a, 0, 0, 1, 0))
+a = 0, 0
+b = 1, 1
+print(height(*a, *b, 0, 2))
