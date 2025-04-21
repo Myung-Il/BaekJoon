@@ -27,29 +27,18 @@ def monotoneChain():
 def solve():
     size = len(stack)
     arc = (pi/2) * l
-    mn = (2*l**2)**0.5
-
-    result = 0
-    for flag in range(1, size+1):
-        p1 = stack[(flag-1)%size]
-        p2 = stack[flag%size]
-
-        length = distance(*p1, *p2)
-        if length!=mn:result += length
-        else:result += arc
-    return result
 
 
 n, l = map(int, input().split())
-xn = [ l, 0,-l, 0]
-yn = [ 0, l, 0,-l]
-points = []
-for _ in range(n):
-    px, py = map(int, input().split())
-    for i in range(4):
-        xi = px+xn[i]
-        yi = py+yn[i]
-        points.append((xi, yi))
+points = [list(map(int, input().split()))for _ in range(n)]
 points.sort()
 stack = monotoneChain()
-print(round(solve()))
+
+size = len(stack)
+result = 2*pi*l
+for idx in range(1, size+1):
+    p1 = stack[(idx-1)%size]
+    p2 = stack[idx%size]
+    result += distance(*p1, *p2)
+
+print(round(result))
