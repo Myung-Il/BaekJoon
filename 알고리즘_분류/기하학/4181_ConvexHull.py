@@ -6,19 +6,15 @@ def ccw(x1, y1, x2, y2, x3, y3):
 
 
 def monotoneChain():
-    upper, lower = [], []
-    
-    for point in points:
-        while len(lower)>1 and ccw(*lower[-2], *lower[-1], *point) <= 0:lower.pop()
-        lower.append(point)
-    lower.pop()
-    
-    for point in reversed(points):
-        while len(upper)>1 and ccw(*upper[-2], *upper[-1], *point) <= 0:upper.pop()
-        upper.append(point)
-    upper.pop()
+    stack = []
 
-    return lower+upper
+    for px, py in points:
+        while len(stack)>1 and ccw(*stack[-2], *stack[-1], px, py) < 0:
+            stack.pop()
+        stack.append((px, py))
+    
+    return stack
+
 
 n = int(input())
 points = []
@@ -27,7 +23,12 @@ for _ in range(n):
     if c=="Y":points.append(list(map(int, (x, y))))
 points.sort()
 
+
 stack = monotoneChain()
+for x, y in points[::-1]:
+    if (x, y) not in stack:
+        stack.append((x, y))
+
 print(len(stack))
 for point in stack:
     print(*point)
