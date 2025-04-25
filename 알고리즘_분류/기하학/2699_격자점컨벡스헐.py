@@ -1,4 +1,5 @@
 from sys import stdin
+from math import ceil
 input = lambda:stdin.readline().rstrip()
 
 def ccw(x1, y1, x2, y2, x3, y3):
@@ -24,7 +25,8 @@ def monotoneChain():
 for _ in range(int(input())):
     n = int(input())
     points = []
-    for _ in range(n//5+n%5):
+
+    for _ in range(ceil(n/5)):
         sub = list(map(int, input().split()))
         for idx in range(0, len(sub)-1, 2):
             points.append((sub[idx], sub[idx+1]))
