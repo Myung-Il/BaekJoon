@@ -25,27 +25,25 @@ def monotoneChain():
 
 def rotatingCalipers(stack, num):
     size = len(stack)
-    result = 0
+    
 
     li, ui = 0, num
-    cnt = 0
-    while cnt!=size:
+    result = distance(*stack[li], *stack[ui])
+    while ui!=0:
         a, b = stack[li], stack[(li+1)%size]
         c, d = stack[ui], stack[(ui+1)%size]
         
         point1 = b[0]-a[0], b[1]-a[1]
         point2 = d[0]-c[0], d[1]-c[1]
 
-        if ccw(*point1, 0, 0, *point2)>0:
-            li = (li+1)%size
-            cnt += 1
-        else: ui = (ui+1)%size
+        if ccw(*point1, 0, 0, *point2)>0:li = (li+1)%size
+        else:ui = (ui+1)%size
         result = max(result, distance(*stack[li], *stack[ui]))
     return result
 
 
 n = int(input())
-points = [list(map(int,input().split()))for _ in range(n)]
+points = [list(map(int, input().split()))for _ in range(n)]
 points.sort()
 
 stack, cnt = monotoneChain()
