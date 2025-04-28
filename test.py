@@ -12,8 +12,8 @@ def horizontal1(x1, y1, xD, yD):
 
 # 예시 사용법
 A = (0, 0)
-B = (1, 0)
-C = (-2, -1)
+B = (2, 0)
+C = (-1, 2)
 
 # 직선 AB에 수직인 점 C에서 D까지의 최단 거리
 D = horizontal(*A, *B, *C)

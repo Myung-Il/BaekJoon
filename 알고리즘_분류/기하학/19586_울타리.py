@@ -8,9 +8,9 @@ def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 
 def verticality(x1, y1, x2, y2, x3, y3):
-    numerator = abs((y2-y1)*x3 - (x2-x1)*y3 + x2*y1 - y2*x1)
+    uierator = abs((y2-y1)*x3 - (x2-x1)*y3 + x2*y1 - y2*x1)
     denominator = ((y2-y1)**2 + (x2-x1)**2)**0.5
-    return numerator / denominator
+    return uierator / denominator
 
 def horizontal(x1, y1, x2, y2, x3, y3):
     t = ((x3-x1)*(x2-x1) + (y3-y1)*(y2-y1)) / ((x2-x1)**2 + (y2-y1)**2)
@@ -36,11 +36,11 @@ def rotatingCalipers(stack, num):
     size = len(stack)
     
     li, ui = 0, num
-    squarepoints = [[0, 0, 0]for _ in range(size)]
-    squarepoints[li][1] = stack[ui]
-    
+    dis = float("inf")
+    result = []
+
     cnt = 0
-    while cnt!=size: # 높이를 구하는 점
+    while cnt!=size:
         a, b = stack[li], stack[(li+1)%size]
         c, d = stack[ui], stack[(ui+1)%size]
         
@@ -48,45 +48,43 @@ def rotatingCalipers(stack, num):
         point2 = d[0]-c[0], d[1]-c[1]
 
         if ccw(*point1, 0, 0, *point2)>0:
+            new = verticality(*stack[li], *stack[(li+1)%size], *stack[ui])
+            if new<dis:result, dis = [li, (li+1)%size, ui], new
             li = (li+1)%size
-            cnt+=1
-            squarepoints[li][1] = c
-        else:
-            ui = (ui+1)%size
-            squarepoints[li][1] = d
-            
-    for li in range(size):
-        a, b = stack[li], stack[(li+1)%size]
-        squarepoints[li][2] = distance(*a, *b)
-        
-        ui = (li+2)%size
-        while (c:=stack[ui])!=squarepoints[li][1]: # 오른쪽에서 가장 먼 점 구하기
-            ui = (ui+1)%size
-            p = horizontal(*a, *b, *c)
-            squarepoints[li][2] = max(squarepoints[li][2], distance(*a, *p))
-        
-        ui = (li-1)%size
-        while (c:=stack[ui])!=squarepoints[li][1]: # 왼쪽에서 가장 먼 점 구하기
-            ui = (ui-1)%size
-            p = horizontal(*a, *b, *c)
-            squarepoints[li][0] = max(squarepoints[li][0], distance(*a, *p))
-        
-        squarepoints[li][1] = verticality(*a, *b, *squarepoints[li][1]) # 높이로 변환하기
-            
-    return squarepoints
+            cnt += 1
+        else:ui = (ui+1)%size
 
-def solve(square):
-    mx = 0
-    for left, col, right in square:
-        row = left+right
-        mx = max(mx, (row+col)*2)
+    a, b, c = result
+    p = horizontal(*stack[a], *stack[b], *stack[c])
+
+    left = 0
+    flag = a+1
+    while flag!=c:
+        flag = (flag-1)%size
+        if ccw(*stack[c], *p, *stack[flag])>=0:continue
+        
+        new = verticality(*stack[c], *p, *stack[flag])
+        if new>left:left = new
+        else:break
+
+    right = 0
+    flag = b-1
+    while flag!=c:
+        flag = (flag+1)%size
+        if ccw(*stack[c], *p, *stack[flag])<0:continue
+
+        new = verticality(*stack[c], *p, *stack[flag])
+        if new>right:right = new
+        else:break
+        
+    return dis*2 + (left+right)*2
 
 
 n = int(input())
 points = [list(map(int, input().split()))for _ in range(n)]
 points.sort()
 
-stack, cnt = monotoneChain()
-square = rotatingCalipers(stack, cnt)
-print(square)
-print(solve(square))
+if n==2:print(distance(*points[0], *points[1])*2)
+else:
+    stack, cnt = monotoneChain()
+    print(rotatingCalipers(stack, cnt))
