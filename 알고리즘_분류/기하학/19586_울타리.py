@@ -40,7 +40,7 @@ def rotatingCalipers(stack, num):
     squarepoints[li][1] = stack[ui]
     
     cnt = 0
-    while cnt!=size:
+    while cnt!=size: # 높이를 구하는 점
         a, b = stack[li], stack[(li+1)%size]
         c, d = stack[ui], stack[(ui+1)%size]
         
@@ -60,18 +60,18 @@ def rotatingCalipers(stack, num):
         squarepoints[li][2] = distance(*a, *b)
         
         ui = (li+2)%size
-        while (c:=stack[ui])!=squarepoints[li][1]:
+        while (c:=stack[ui])!=squarepoints[li][1]: # 오른쪽에서 가장 먼 점 구하기
             ui = (ui+1)%size
             p = horizontal(*a, *b, *c)
             squarepoints[li][2] = max(squarepoints[li][2], distance(*a, *p))
         
         ui = (li-1)%size
-        while (c:=stack[ui])!=squarepoints[li][1]:
+        while (c:=stack[ui])!=squarepoints[li][1]: # 왼쪽에서 가장 먼 점 구하기
             ui = (ui-1)%size
             p = horizontal(*a, *b, *c)
             squarepoints[li][0] = max(squarepoints[li][0], distance(*a, *p))
         
-        squarepoints[li][1] = verticality(*a, *b, *squarepoints[li][1])
+        squarepoints[li][1] = verticality(*a, *b, *squarepoints[li][1]) # 높이로 변환하기
             
     return squarepoints
 
