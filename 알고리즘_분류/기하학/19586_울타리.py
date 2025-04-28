@@ -36,8 +36,7 @@ def rotatingCalipers(stack, num):
     size = len(stack)
     
     li, ui = 0, num
-    dis = float("inf")
-    result = []
+    basic = []
 
     cnt = 0
     while cnt!=size:
@@ -48,36 +47,37 @@ def rotatingCalipers(stack, num):
         point2 = d[0]-c[0], d[1]-c[1]
 
         if ccw(*point1, 0, 0, *point2)>0:
-            new = verticality(*stack[li], *stack[(li+1)%size], *stack[ui])
-            if new<dis:result, dis = [li, (li+1)%size, ui], new
+            basic.append((li, (li+1)%size, ui, verticality(*stack[li], *stack[(li+1)%size], *stack[ui])))
             li = (li+1)%size
             cnt += 1
         else:ui = (ui+1)%size
 
-    a, b, c = result
-    p = horizontal(*stack[a], *stack[b], *stack[c])
+    result = float("inf")
+    for a, b, c, height in basic:
+        p = horizontal(*stack[a], *stack[b], *stack[c])
 
-    left = 0
-    flag = a+1
-    while flag!=c:
-        flag = (flag-1)%size
-        if ccw(*stack[c], *p, *stack[flag])>=0:continue
+        left = 0
+        flag = a+1
+        while flag!=c:
+            flag = (flag-1)%size
+            if ccw(*stack[c], *p, *stack[flag])>=0:continue
+            
+            new = verticality(*stack[c], *p, *stack[flag])
+            if new>left:left = new
+            else:break
+
+        right = 0
+        flag = b-1
+        while flag!=c:
+            flag = (flag+1)%size
+            if ccw(*stack[c], *p, *stack[flag])<0:continue
+
+            new = verticality(*stack[c], *p, *stack[flag])
+            if new>right:right = new
+            else:break
         
-        new = verticality(*stack[c], *p, *stack[flag])
-        if new>left:left = new
-        else:break
-
-    right = 0
-    flag = b-1
-    while flag!=c:
-        flag = (flag+1)%size
-        if ccw(*stack[c], *p, *stack[flag])<0:continue
-
-        new = verticality(*stack[c], *p, *stack[flag])
-        if new>right:right = new
-        else:break
-        
-    return dis*2 + (left+right)*2
+        result = min(result, (height+left+right)*2)
+    return result
 
 
 n = int(input())
