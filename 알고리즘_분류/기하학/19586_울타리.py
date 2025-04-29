@@ -32,12 +32,37 @@ def monotoneChain():
     
     return lower+upper, len(lower)
 
+def transverse(stack, a, b, c):
+    size = len(stack)
+    p = horizontal(*stack[a], *stack[b], *stack[c])
+
+    left = 0
+    flag = a+1
+    while flag!=c:
+        flag = (flag-1)%size
+        if ccw(*stack[c], *p, *stack[flag])>=0:continue
+        
+        new = verticality(*stack[c], *p, *stack[flag])
+        if new>left:left = new
+        else:break
+
+    right = 0
+    flag = b-1
+    while flag!=c:
+        flag = (flag+1)%size
+        if ccw(*stack[c], *p, *stack[flag])<0:continue
+
+        new = verticality(*stack[c], *p, *stack[flag])
+        if new>right:right = new
+        else:break
+    
+    return left+right
+
 def rotatingCalipers(stack, num):
     size = len(stack)
-    
     li, ui = 0, num
-    basic = []
 
+    result = float("inf")
     cnt = 0
     while cnt!=size:
         a, b = stack[li], stack[(li+1)%size]
@@ -47,37 +72,14 @@ def rotatingCalipers(stack, num):
         point2 = d[0]-c[0], d[1]-c[1]
 
         if ccw(*point1, 0, 0, *point2)>0:
-            basic.append((li, (li+1)%size, ui, verticality(*stack[li], *stack[(li+1)%size], *stack[ui])))
+            row = transverse(stack, li, (li+1)%size, ui)
+            col = verticality(*stack[li], *stack[(li+1)%size], *stack[ui])
+            result = min(result, row+col)
+
             li = (li+1)%size
             cnt += 1
         else:ui = (ui+1)%size
-
-    result = float("inf")
-    for a, b, c, height in basic:
-        p = horizontal(*stack[a], *stack[b], *stack[c])
-
-        left = 0
-        flag = a+1
-        while flag!=c:
-            flag = (flag-1)%size
-            if ccw(*stack[c], *p, *stack[flag])>=0:continue
-            
-            new = verticality(*stack[c], *p, *stack[flag])
-            if new>left:left = new
-            else:break
-
-        right = 0
-        flag = b-1
-        while flag!=c:
-            flag = (flag+1)%size
-            if ccw(*stack[c], *p, *stack[flag])<0:continue
-
-            new = verticality(*stack[c], *p, *stack[flag])
-            if new>right:right = new
-            else:break
-        
-        result = min(result, (height+left+right)*2)
-    return result
+    return result*2
 
 
 n = int(input())
