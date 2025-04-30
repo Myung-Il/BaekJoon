@@ -7,9 +7,13 @@ def ccw(x1, y1, x2, y2, x3, y3):
 def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 
-# 수선 위의 점
-def horizontal(x1, y1, x2, y2, px, py):
-    t = ((px-x1)*(x2-x1) + (py-y1)*(y2-y1)) / ((x2-x1)**2 + (y2-y1)**2)
+def verticality(x1, y1, x2, y2, x3, y3):
+    uierator = abs((y2-y1)*x3 - (x2-x1)*y3 + x2*y1 - y2*x1)
+    denominator = ((y2-y1)**2 + (x2-x1)**2)**0.5
+    return uierator / denominator
+
+def horizontal(x1, y1, x2, y2, x3, y3):
+    t = ((x3-x1)*(x2-x1) + (y3-y1)*(y2-y1)) / ((x2-x1)**2 + (y2-y1)**2)
     return (x1 + t*(x2-x1), y1 + t*(y2-y1))
 
 
@@ -28,9 +32,30 @@ def monotoneChain():
     
     return lower+upper, len(lower)
 
-def sub(stack, a, b):
-    for point in stack:
-        p = horizontal(*a, *b, *point)
+def transverse(stack, a, b, c):
+    size = len(stack)
+    p = horizontal(*stack[a], *stack[b], *stack[c])
+
+    left = 0
+    flag = a+1
+    while flag!=c:
+        flag = (flag-1)%size
+        if ccw(*stack[c], *p, *stack[flag])>=0:continue
+        
+        new = verticality(*stack[c], *p, *stack[flag])
+        if new>left:left = new
+        else:break
+
+    right = 0
+    flag = b-1
+    while flag!=c:
+        flag = (flag+1)%size
+        if ccw(*stack[c], *p, *stack[flag])<=0:continue
+
+        new = verticality(*stack[c], *p, *stack[flag])
+        if new>right:right = new
+        else:break
+    return left+right
 
 def rotatingCalipers(stack, num):
     size = len(stack)
@@ -46,6 +71,10 @@ def rotatingCalipers(stack, num):
         point2 = d[0]-c[0], d[1]-c[1]
 
         if ccw(*point1, 0, 0, *point2)>0:
+            row = transverse(stack, li, (li+1)%size, ui)
+            col = verticality(*stack[li], *stack[(li+1)%size], *stack[ui])
+            result = min(result, row+col)
+
             li = (li+1)%size
             cnt += 1
         else:ui = (ui+1)%size
