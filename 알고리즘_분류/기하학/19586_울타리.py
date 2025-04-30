@@ -1,22 +1,3 @@
-'''
-꼼수를 쓸 문제
-
-해당 문제를 풀기 위해서는 기본 창틀을 만들어서 테두리 길이를 구하고
-창틀을 돌려가면서 테두리 창보다 작은게 나오면 창의 크기를 줄이고
-창을 벗어나는 점이 생기면 창틀을 다시 돌린다
-이를 90도까지만 돌리면 된다
-
-라고 하지만?
-잘 모르겠다
-창을 돌리는 로직을 짜고 싶어도 어떻게 하면 좋을지 잘 모르겠다
-그러니 돌리기는 돌리는데 창을 돌리지는 않을 것이다
-정확히는 굳이 구현하지 않는다
-
-이미 로테이션켈리퍼스가 모든 점을 돌려가면서 찾고 있다, 물론 이건 가장 먼 점이다
-문제는 양옆의 끝점인데 이를 위의 창틀을 만드는 기법과 연계할 것이다
-
-'''
-
 from sys import stdin
 input=lambda:stdin.readline().rstrip()
 
@@ -55,32 +36,64 @@ def transverse(stack, a, b, c):
     size = len(stack)
     p = horizontal(*stack[a], *stack[b], *stack[c])
 
-    left = 0
+    left, lt = 0, 0
     flag = a+1
     while flag!=c:
         flag = (flag-1)%size
-        if ccw(*stack[c], *p, *stack[flag])>=0:continue
+        if ccw(*stack[c], *p, *stack[flag])>0:continue
         
         new = verticality(*stack[c], *p, *stack[flag])
-        if new>left:left = new
+        if new>left:left, lt = new, flag
         else:break
 
-    right = 0
+    right, rt = 0, 0
     flag = b-1
     while flag!=c:
         flag = (flag+1)%size
-        if ccw(*stack[c], *p, *stack[flag])<=0:continue
+        if ccw(*stack[c], *p, *stack[flag])<0:continue
 
         new = verticality(*stack[c], *p, *stack[flag])
-        if new>right:right = new
+        if new>right:right, rt = new, flag
         else:break
-    return left+right
+    return left+right, lt, rt
+
+def setting(stack, li, ui):
+    size = len(stack)
+    
+    while True:
+        a, b = stack[li], stack[(li+1)%size]
+        c, d = stack[ui], stack[(ui+1)%size]
+        
+        point1 = b[0]-a[0], b[1]-a[1]
+        point2 = d[0]-c[0], d[1]-c[1]
+
+        if ccw(*point1, 0, 0, *point2)>0:
+            row, lt, rt = transverse(stack, li, (li+1)%size, ui)
+            col = verticality(*stack[li], *stack[(li+1)%size], *stack[ui])
+            
+            return row+col, lt, li, rt, ui
+        else:ui = (ui+1)%size
+    
+def move(stack, c, p, lt, rt):
+    size = len(stack)
+    
+    case = ((verticality(*c, *p, *stack[(lt+1)%size]), (lt+1)%size),
+            (verticality(*c, *p, *stack[lt]), lt),
+            (verticality(*c, *p, *stack[(lt-1)%size]), (lt-1)%size))
+    left, lt = max(case, key=lambda s:s[0])
+    
+    case = ((verticality(*c, *p, *stack[(rt+1)%size]), (rt+1)%size),
+            (verticality(*c, *p, *stack[rt]), rt),
+            (verticality(*c, *p, *stack[(rt-1)%size]), (rt-1)%size))
+    right,rt = max(case, key=lambda s:s[0])
+    
+    return left+right, lt, rt
+    
 
 def rotatingCalipers(stack, num):
     size = len(stack)
-    li, ui = 0, num
-
-    result = float("inf")
+    result, lt, li, rt, ui = setting(stack, 0, num)
+    
     cnt = 0
     while cnt!=size:
         a, b = stack[li], stack[(li+1)%size]
@@ -90,10 +103,15 @@ def rotatingCalipers(stack, num):
         point2 = d[0]-c[0], d[1]-c[1]
 
         if ccw(*point1, 0, 0, *point2)>0:
-            row = transverse(stack, li, (li+1)%size, ui)
+            p = horizontal(*a, *b, *c)
+            print(lt, rt,end=f" =[{li}]> ")
+            row, lt, rt = move(stack, c, p, lt, rt)
+            print(lt, rt)
             col = verticality(*stack[li], *stack[(li+1)%size], *stack[ui])
             result = min(result, row+col)
 
+            lt = (lt+1)%size
+            rt = (rt+1)%size
             li = (li+1)%size
             cnt += 1
         else:ui = (ui+1)%size
