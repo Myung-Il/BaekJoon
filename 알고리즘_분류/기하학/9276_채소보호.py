@@ -50,12 +50,11 @@ def transverse(stack, a, b, c):
     flag = b-1
     while flag!=c:
         flag = (flag+1)%size
-        if ccw(*stack[c], *p, *stack[flag])<0:continue
+        if ccw(*stack[c], *p, *stack[flag])<=0:continue
 
         new = verticality(*stack[c], *p, *stack[flag])
         if new>right:right = new
         else:break
-    
     return left+right
 
 def rotatingCalipers(stack, num):
@@ -81,11 +80,12 @@ def rotatingCalipers(stack, num):
         else:ui = (ui+1)%size
     return result*2
 
+while True:
+    try:
+        n = int(input())
+        points = [list(map(int, input().split()))for _ in range(n)]
+        points.sort()
 
-try:
-    n = int(input())
-    points = [list(map(int, input().split()))for _ in range(n)]
-    points.sort()
-
-    stack, cnt = monotoneChain()
-    print(rotatingCalipers(stack, cnt))
+        stack, cnt = monotoneChain()
+        print(rotatingCalipers(stack, cnt))
+    except:break
