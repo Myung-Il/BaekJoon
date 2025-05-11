@@ -33,10 +33,10 @@ def rotatingCalipers(lower, upper):
         a, b = stack[li], stack[(li+1)%size]
         c, d = stack[ui], stack[(ui+1)%size]
         
-        point1 = b[0]-a[0], b[1]-a[1]
-        point2 = d[0]-c[0], d[1]-c[1]
+        point1 = a[0]-b[0], a[1]-b[1]
+        point2 = c[0]-d[0], c[1]-d[1]
 
-        if ccw(*point1, 0, 0, *point2)>0: li = (li+1)%size
+        if ccw(0, 0, *point1, *point2)<=0: li = (li+1)%size
         else: ui = (ui+1)%size
         mx = max(mx, distance(*stack[li], *stack[ui]))
     return mx
