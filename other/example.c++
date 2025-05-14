@@ -69,7 +69,7 @@ int main() {
         v.emplace_back(x, y);    // 좌표 저장
     }
     convexHull(v); // 캔벅스 헐 이동
-    n = v.size();  // n은 껍질의 갯수수
+    n = v.size();  // n은 껍질의 갯수
  
     cout << fixed << setprecision(13); // 소수점 아래 13자리까지 출력
     if (n == 1) {  // 좌표가 1개면
@@ -90,6 +90,7 @@ int main() {
         if (r2 % n == i) r2++;
         if (r3 % n == i) r3++;
  
+        // 내적을 이용하여 가장 오른쪽과 위쪽, 아래쪽을 정하는 코드이다, dot은 내적을 구하는 함수이다
         while (ccw(v[i], v[(i + 1) % n], v[(r1 + 1) % n] - v[r1 % n] + v[(i + 1) % n]) > 0 && dot(v[(i + 1) % n] - v[i], v[(r1 + 1) % n] - v[r1 % n]) > 0) r1++;
         while (ccw(v[i], v[(i + 1) % n], v[(r2 + 1) % n] - v[r2 % n] + v[(i + 1) % n]) > 0)                                                                r2++;
         while (ccw(v[i], v[(i + 1) % n], v[(r3 + 1) % n] - v[r3 % n] + v[(i + 1) % n]) > 0 || dot(v[(i + 1) % n] - v[i], v[(r3 + 1) % n] - v[r3 % n]) < 0) r3++;

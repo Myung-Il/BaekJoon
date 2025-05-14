@@ -4,6 +4,9 @@ input=lambda:stdin.readline().rstrip()
 def ccw(x1, y1, x2, y2, x3, y3): # 시계방향 : -1, 직선 : 0, 역방향 : 1
     return x1*y2+x2*y3+x3*y1 -x2*y1-x3*y2-x1*y3
 
+def inner(x1, y1, x2, y2):
+    return x1*x2 + y1*y2
+
 def distance(x1, y1, x2, y2): # 점과 점 간의 거리
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 
@@ -33,74 +36,21 @@ def monotoneChain():      # 블록 껍질을 구하는 것 중, x의 정렬만�
     
     return lower+upper, len(lower)
 
-def setting(stk, li, ui):
-    size = len(stk)
-    dist = [0, 0]
-
-    a, b, p = stack[li], stack[ui], li
-    right = (p+1)%size
-    while p!=ui: # 오른쪽에서 제일 멀리 있는 점의 번호
-        p = (p+1)%size
-        if ccw(*a, *b, *stk[p])==0:break
-        lenght = verticality(*a, *b, *stk[p])
-        if right<lenght:
-            right, dist[0] = p, lenght
-            break
-
-    a, b, p = stack[ui], stack[li], ui
-    left = (p+1)%size
-    while p!=li: # 왼쪽에서 제일 멀리 있는 점의 번호
-        p = (p+1)%size
-        if ccw(*a, *b, *stk[p])==0:break
-        lenght = verticality(*a, *b, *stk[p])
-        if left<lenght:
-            left, dist[1] = p, lenght
-            break
-        
-    return left, right, sum(dist)
-
-def sideMove(s, p, c, lt, rt):
-    dist = [0, 0]
-
-    case1 = verticality(*p, *c, *s[rt])
-    case2 = verticality(*p, *c, *s[(rt+1)%len(s)])
-    right, dist[0] = ((rt+1)%len(s), case2) if case1<case2 else (rt, case1)
-    
-    case1 = verticality(*p, *c, *s[lt])
-    case2 = verticality(*p, *c, *s[(lt+1)%len(s)])
-    left, dist[1] = ((lt+1)%len(s), case2) if case1<case2 else (lt, case1)
-    
-    return left, right, sum(dist)
-
-
 def rotatingCalipers(stack, num):
     size = len(stack)
-    li, ui = 0, num # 맨 아래 점, 맨 위의 점
-    lt, rt, row = setting(stack, 0, num) # 맨 왼쪽 점, 맨 오른쪽 점, 거리
-    result = 0
+    result = float("inf")
     
-    cnt = 0
-    while cnt!=size:
-        a, b = stack[li], stack[(li+1)%size]
-        c, d = stack[ui], stack[(ui+1)%size]
-        p = horizontal(*a, *b, *c)
+    right = 1 # 오른쪽 점 번호
+    top = 1   #   위쪽 점 번호
+    left = 1  #   왼쪽 점 번호
+    for idx in range(size):
+        # 기준 번호 idx와 같으면 문제가 생김, 피해주는 코드
+        if right%size==idx:right+=1
+        if  left%size==idx: left+=1
+        if   top%size==idx:  top+=1
         
-        point1 = a[0]-b[0], a[1]-b[1]
-        point2 = c[0]-d[0], c[1]-d[1]
-
-        print(li, ui, "==", row, end=", ")
-        if ccw(0, 0, *point1, *point2)<=0: # 높이가 최대 일 때
-            col = verticality(*a, *b, *c)
-            print(col, end=" === ")
-            result = max(result, row+col) # 결과 기록
-            li = (li+1)%size # 포인터 이동
-            cnt += 1
-        else:
-            print(end="X === ")
-            ui = (ui+1)%size
-        lt, rt, row = sideMove(stack, p, c, lt, rt) # 양옆의 거리 최대 구하기
-        print(result)
-    return result*2
+        while ccw(stack[idx], stack[(idx+1)%size], stack[(right+1)%size]-stack[right%size]+stack[(idx+1)%size])\
+            and inner(stack[(idx+1)%size]-stack[idx], stack[(right+1)%size]-stack[right%size])
 
 
 n = int(input()) # 목장의 수
