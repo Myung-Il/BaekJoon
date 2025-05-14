@@ -1,55 +1,47 @@
-s = "1900 1900 901 900 900 900 900 900 900".split()
-p = 0
-for i in range(1, 10): p+=int(s[i-1])*i
-print(p)
+from sys import stdin
+input=lambda:stdin.readline().rstrip()
 
-n, m = 0, 3000
+class Operation:
+    def __add__(p1, p2):return p1.x+p2.x, p1.y+p2.y
+    def __sub__(p1, p2):return p1.x-p2.x, p1.y-p2.y
 
-n_arr = [0 for _ in range(10)]
-m_arr = [0 for _ in range(10)]
+class Point(Operation):
+    def __init__(self, point):
+        self.x, self.y = point
 
-n -= 1
-point = 1
-while n != 0:
-    while n % 10 != 9:
-        for i in str(n):
-            n_arr[int(i)] += point
-        n -= 1
-    if n < 10:
-        for i in range(n + 1):
-            n_arr[i] += point
-        n_arr[0] -= point
-        break
-    else:
-        for i in range(10):
-            n_arr[i] += (n // 10 + 1) * point
-    n_arr[0] -= point
-    point *= 10
-    n //= 10
+    def __iter__(self):
+        yield self.x
+        yield self.y
 
+    def ccw(self, x1, y1, x2, y2): # 시계방향 : -1, 직선 : 0, 역방향 : 1
+        return x1*y2+x2*self.y+self.x*y1 -x2*y1-self.x*y2-x1*self.y
 
-point = 1
-while m != 0:
-    while m % 10 != 9:
-        for i in str(m):
-            m_arr[int(i)] += point
-        m -= 1
-    if m < 10:
-        for i in range(m + 1):
-            m_arr[i] += point
-        m_arr[0] -= point
-        break
-    else:
-        for i in range(10):
-            m_arr[i] += (m // 10 + 1) * point
-    m_arr[0] -= point
-    point *= 10
-    m //= 10
+    def distance(self, point):
+        x, y = self-point
+        return (x**2 + y**2)**0.5
+    
+    
+def monotoneChain():      # 블록 껍질을 구하는 것 중, x의 정렬만으로 구하는 공식
+    upper, lower = [], [] # 윗 집합의 리스트, 아래 집합의 리스트
+
+    for point in points: # lower안의 점이 point보다 왼쪽이거나 직선상에 있으면 꺼낸다, 최외각이 아니기 때문이다.
+        while len(lower)>1 and point.ccw(*lower[-2], *lower[-1]) <= 0:lower.pop()
+        lower.append(point) # 최외각인 점을 새로 넣어준다
+    lower.pop() # 마지막에 추가되는 점은 upper의 시작 점이다.
+    
+    # x역정렬도 똑같다
+    for point in points[::-1]:
+        while len(upper)>1 and point.ccw(*upper[-2], *upper[-1]) <= 0:upper.pop()
+        upper.append(point)
+    upper.pop()
+    
+    return lower+upper
 
 
-ans = 0
-for i in range(10):
-    ans += (m_arr[i] - n_arr[i]) * i
+n = int(input())
+points = [Point(map(int, input().split()))for _ in range(n)]
+points.sort(key=lambda p:(p.x, p.y))
 
-print(ans)
-print(m_arr)
+stack = monotoneChain()
+print(len(stack))
+print(Point(stack[0]+stack[1]).distance(stack[2]))
