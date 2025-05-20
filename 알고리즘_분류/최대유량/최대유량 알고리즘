@@ -1,3 +1,53 @@
-"maximum flow algorithm"
+네트워크 플로우 : Network Flow
+최대 유량 : Maximum Flow
 
-검색 했을 때, "네트워크 플로우 알고리즘"에 대해서 나온다.
+용량 : Capacity = 정점간의 가중치
+유량 : Flow = 정점간의 실 가중치
+잔여 용량 : Residual_Capacity = 용량과 유량의 차이 ( 더 보낼 수 있는 유량 )
+소스 : Source = 시작 노드
+싱크 : Sink = 도착 노드
+c(a, b) = a >>> b 소화 가능한 요량
+f(a, b) = a >>> b 사용 가능한 유량
+
+1. 용량 제한
+    - 각 간선에 흐르는 유량의 량은 용량은 넘어설 수 없음
+    - f(a, b) <= c(a, b)
+2. 유량 보존
+    - 어느 정점의 들어오는 유량과 나가는 유량은 같아야한다
+        - a >>> b >>> c
+        - f(a, b) == f(b, c)
+3. 유량 대칭
+    - a >>> b [Capacity = 5], 실제 간선
+    - b >>> a [Capacity = 0], 가상 간선
+    - f(a, b) = -f(b, a)
+
+
+
+[ 포드-풀커슨 알고리즘 : Ford-Fulkerson Algorithm ], O(V+E)*F
+1. 알고리즘 특징
+    - 브루트 포스 : Brute Force Algorithm
+    - 증가 경로 : Augmenting Path, 소스에서 싱크로 가능 경로를 찾음
+        - c(a, b)-f(a, b) > 0, 더 보낼 수 있는지 확인
+    - 경로에 최대 유량을 보냄
+        [ 실제 ]
+        - f(a, b) += flow
+        - f(b, c) += flow
+        [ 가상 ]
+        - -f(b, a) -= flow
+        - -f(c, b) -= flow
+2. 알고리즘 설명
+    1. 경로를 찾는다, 방법은 뭘 쓰든 상관하지 않는다
+        - 단, 잔여 용량이 있어야 한다
+    2. 최대 유량을 찾는다, c(a, b)-f(a, b)의 값
+    3. 다른 경로를 찾는다
+    4. 다시 유량값을 넣는다, 유량은 누적된다
+    이후, 최종적으로 싱크에 도착한 유량이 최대인가?
+        - 최대가 아닐 경우, 역간선
+            - 유량 대칭에 엇긋나게 만든 것이다
+    
+
+
+에드몬트-카프 알고리즘 : Edmonds-Karp Algorithm
+1. 알고리즘 특징
+    - BFS : Breadth First Search
+    - 
