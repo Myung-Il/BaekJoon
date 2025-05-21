@@ -1,4 +1,4 @@
-   public static int capacity[][];
+    public static int capacity[][];
     public static int flow[][];
     public static int path[]; // 
     public static boolean visited[];
