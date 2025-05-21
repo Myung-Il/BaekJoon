@@ -47,7 +47,13 @@ f(a, b) = a >>> b 사용 가능한 유량
     
 
 
-에드몬트-카프 알고리즘 : Edmonds-Karp Algorithm
+[ 에드몬트-카프 알고리즘 : Edmonds-Karp Algorithm ], O(VE**2)
 1. 알고리즘 특징
     - BFS : Breadth First Search
-    - 
+    - 유량 값이 적고 간선이 많으면 느려짐
+2. 알고리즘 설명
+    1. 소스에서 싱크로 경로를 찾음, 증가 경로 찾기
+    2. 최대 유량 값을 찾음
+    3. 최대 유량을 넣는다
+    4. 경로를 다시 찾는다
+
