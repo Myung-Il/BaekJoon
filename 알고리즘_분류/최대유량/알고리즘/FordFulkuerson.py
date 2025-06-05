@@ -1,96 +1,72 @@
-# This class represents a directed graph ( 이 클래스는 방향 그래프를 나타냅니다 )
-# using adjacency matrix representation  ( 인접 행렬 표현 사용 )
-class Graph:
-    def __init__(self, graph):
-        self.graph = graph # residual graph, ( 잔여 그래프 )
-        self.ROW = len(graph)
-        # self.COL = len(gr[0])
+# Ford-Fulkerson Method ( 포드 풀커슨 메소드 )
+# This implementation can be inefficient for certain graphs ( 이 구현은 특정 그래프에 대해 비효율적일 수 있고 )
+# and may not terminate if capacities are irrational numbers. ( 용량이 무리수인 경우 종료 되지 않을 수 있다 )
 
-    '''Returns true if there is a path from source 's' to sink 't' in
-    residual graph. Also fills parent[] to store the path '''
-    # 만약 잔여 그래프 안에 소스 s에서 싱크 t를 향하는 경로가 있다면 참값을 반환한다
-    # 또한 경로를 저장하기 위해서 부모 리스트에 채운다
+# Number of vertices ( 정점의 수 )
+V = 6
 
-    def BFS(self, s, t, parent):
-        # Mark all the vertices as not visited ( 모든 정점을 방문하지 않은 것으로 표시  )
-        visited = [False]*(self.ROW)
-        # Create a queue for BFS ( BFS를 위한 큐 생성 )
-        queue = []
+# DFS to find an augmenting path ( 증가 경로 찾기 위한 DFS  )
+def dfs(rGraph, s, t, parent, visited):
+    visited[s] = True
+    if s == t:
+        return True
 
-        # Mark the source node as visited and enqueue it ( 소스 노드를 방문한 것으로 표시 and 큐에 추가 )
-        visited[s] = True
-        queue.append(s)
+    for v in range(V):
+        # rGraph[s][v] > 0 means there's remaining capacity ( rGraph[s][v] > 0은 남은 용량을 의미한다 )
+        if rGraph[s][v] > 0 and not visited[v]:
+            parent[v] = s # Store path ( 저장된 경로 )
+            if dfs(rGraph, v, t, parent, visited):
+                return True
+    return False
 
-        # Standard BFS Loop ( BFS 실행 )
-        while queue:
+# Returns the maximum flow from s to t in the given graph ( 주어진 그래프에서 s에서 t까지의 최대 유량을 반환 )
+def ford_fulkerson_dfs(graph, s, t):
+    # Create residual graph and fill with initial capacities ( 잔여 그래프를 생성하고 초기 용량을 채운다 )
+    rGraph = [[0] * V for _ in range(V)]
+    for u in range(V):
+        for v in range(V):
+            rGraph[u][v] = graph[u][v]
 
-            # Dequeue a vertex from queue and print it ( 큐에서 정점을 꺼냄 and 출력 )
-            u = queue.pop(0)
+    parent = [-1] * V # Array to store path ( 경로를 저장할 배열 )
+    max_flow = 0
 
-            # Get all adjacent vertices of the dequeued vertex u ( 꺼낸 정점 u의 인접 정점들 모두 얻는다 )
-            # If a adjacent has not been visited, then mark it ( 만약 방문 하지 않은 인접은 표시합니다 )
-            # visited and enqueue it ( 방문 처리 후 큐에 넣습니다 )
-            for ind, val in enumerate(self.graph[u]):
-                if visited[ind] == False and val > 0:
-                    # If we find a connection to the sink node, ( 만약 우리가 싱크 노드까지 찾았다면, )
-                    # then there is no point in BFS anymore ( 그러면 더 이상 BFS 안에 대상은 없습니다 )
-                    # We just have to set its parent and can return true ( 그저 부모를 설정하고 True를 반환하면 된다 )
-                    queue.append(ind)
-                    visited[ind] = True
-                    parent[ind] = u
-                    if ind == t:
-                        return True
+    # Augment the flow while there is a path from source to sink ( 소스에서 싱크까지 경로 동안 유량은 증가한다 )
+    # Note: visited array must be reset for each DFS call ( 참고: 방문한 배열은 각 DFS 호출마다 재설정해야 한다 )
+    while True:
+        visited = [False] * V
+        if not dfs(rGraph, s, t, parent, visited):
+            break # No more augmenting paths ( 더 이상 증가할 경로가 없다면 )
 
-        # We didn't reach sink in BFS starting from source, ( BFS 처음부터 싱크를 찾지 못함 )
-        # so return false ( False를 반환한다 )
-        return False
-            
-    
-    # Returns the maximum flow from s to t in the given graph ( 주어진 그래프 s에서 t까지의 최대 유량을 반환 )
-    def FordFulkerson(self, source, sink):
+        # Find bottleneck capacity of the found path ( 찾았던 경로 중 꽉찬 용량을 찾는다 )
+        path_flow = float('inf')
+        v = t
+        while v != s:
+            u = parent[v]
+            path_flow = min(path_flow, rGraph[u][v])
+            v = parent[v]
 
-        # This array is filled by BFS and to store path ( 이 배열은 BFS로 채워지고 경로를 저장한다 )
-        parent = [-1]*(self.ROW)
+        # Update residual capacities along the path
+        v = t
+        while v != s:
+            u = parent[v]
+            rGraph[u][v] -= path_flow # Forward edge capacity reduction
+            rGraph[v][u] += path_flow # Backward edge capacity increase
+            v = parent[v]
 
-        max_flow = 0 # There is no flow initially ( 처음에는 유량이 없다 )
+        max_flow += path_flow
 
-        # Augment the flow while there is path from source to sink ( 소스에서 싱크로 경로로 가는 동안 유량은 증가한다 )
-        while self.BFS(source, sink, parent) :
+    return max_flow
 
-            # Find minimum residual capacity of the edges along the ( BFS로 채워진 경로를 따라 가장자리의 최소 잔여 용량 찾는다 )
-            # path filled by BFS. Or we can say find the maximum flow ( 또는 찾은 경로를 통해 최소 유량을 찾을 수 있다 )
-            # through the path found.
-            path_flow = float("Inf")
-            s = sink
-            while(s != source):
-                path_flow = min(path_flow, self.graph[parent[s]][s])
-                s = parent[s]
+# Driver program to test above functions ( 위의 기능을 테스트하는 드라이버 프로그램 )
+if __name__ == "__main__":
+    graph = [[0, 16, 13, 0, 0, 0],
+             [0, 0, 10, 12, 0, 0],
+             [0, 4, 0, 0, 14, 0],
+             [0, 0, 9, 0, 0, 20],
+             [0, 0, 0, 7, 0, 4],
+             [0, 0, 0, 0, 0, 0]]
 
-            # Add path flow to overall flow ( 전체 유량에 경로 유량 추가 )
-            max_flow += path_flow
+    source = 0
+    sink = 5
 
-            # update residual capacities of the edges and ( 경로를 따라 가장자리와 반대편의 잔여 용량 업데이트 )
-            # reverse edges along the path
-            v = sink
-            while(v != source):
-                u = parent[v]
-                self.graph[u][v] -= path_flow
-                self.graph[v][u] += path_flow
-                v = parent[v]
-
-        return max_flow
-
-
-# Create a graph given in the above diagram ( 위 다이아그램에서 주어진 그래프 생성 ) ( 다이어 그램 없음 )
-graph = [[0, 16, 13, 0, 0, 0],
-        [0, 0, 10, 12, 0, 0],
-        [0, 4, 0, 0, 14, 0],
-        [0, 0, 9, 0, 0, 20],
-        [0, 0, 0, 7, 0, 4],
-        [0, 0, 0, 0, 0, 0]]
-
-g = Graph(graph)
-source = 0
-sink = 5
-
-print ("The maximum possible flow is %d " % g.FordFulkerson(source, sink))
+    print("The maximum possible flow is", ford_fulkerson_dfs(graph, source, sink))
