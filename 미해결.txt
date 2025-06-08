@@ -2,4 +2,3 @@
 1081_합.py
 1011_FlymetotheAlphaCentauri.py
 1031_스타대결.py
-6086_최대유량.py
