@@ -3,7 +3,6 @@ from collections import defaultdict, deque
 from string import ascii_uppercase
 
 input = lambda:stdin.readline().rstrip()
-AUP = {ascii:False for ascii in ascii_uppercase}
 INF = float("inf")
 
 class EdmondsKarp:
@@ -11,7 +10,7 @@ class EdmondsKarp:
         self.graph = G
 
     def BFS(self, source, sink, parent):
-        visit = AUP
+        visit = {ascii:False for ascii in ascii_uppercase}
         queue = deque()
 
         visit[source] = True
@@ -30,7 +29,7 @@ class EdmondsKarp:
 
     
     def maxFlow(self, source, sink):
-        parent = AUP
+        parent = {ascii:"Z" for ascii in ascii_uppercase}
         flow = 0
 
         while self.BFS(source, sink, parent):
@@ -47,14 +46,14 @@ class EdmondsKarp:
                 vertex = parent[sk]
                 self.graph[vertex][sink] -= path
                 self.graph[sink][vertex] += path
-                sk = parent[vertex]
+                sk = vertex
         return flow
 
 n = int(input())
 graph = {ascii2:{ascii1:0 for ascii1 in ascii_uppercase} for ascii2 in ascii_uppercase}
 for _ in range(n):
     source, sink, capacity = input().split()
-    graph[source][sink] = int(capacity)
+    graph[source][sink] += int(capacity)
 
 EK = EdmondsKarp(graph)
 
