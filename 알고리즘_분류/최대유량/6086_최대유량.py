@@ -10,7 +10,7 @@ class EdmondsKarp:
         self.graph = G
 
     def BFS(self, source, sink, parent):
-        visit = {ascii:False for ascii in ascii_uppercase}
+        visit = defaultdict(bool)
         queue = deque()
 
         visit[source] = True
@@ -29,7 +29,7 @@ class EdmondsKarp:
 
     
     def maxFlow(self, source, sink):
-        parent = {ascii:"Z" for ascii in ascii_uppercase}
+        parent = dict()
         flow = 0
 
         while self.BFS(source, sink, parent):
