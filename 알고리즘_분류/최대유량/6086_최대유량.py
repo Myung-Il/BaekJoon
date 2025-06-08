@@ -44,13 +44,13 @@ class EdmondsKarp:
             sk = sink
             while sk!=source:
                 vertex = parent[sk]
-                self.graph[vertex][sink] -= path
-                self.graph[sink][vertex] += path
+                self.graph[vertex][sk] -= path
+                self.graph[sk][vertex] += path
                 sk = vertex
         return flow
 
 n = int(input())
-graph = {ascii2:{ascii1:0 for ascii1 in ascii_uppercase} for ascii2 in ascii_uppercase}
+graph = {a: defaultdict(int) for a in ascii_uppercase}
 for _ in range(n):
     source, sink, capacity = input().split()
     graph[source][sink] += int(capacity)
