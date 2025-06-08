@@ -50,10 +50,11 @@ class EdmondsKarp:
         return flow
 
 n = int(input())
-graph = {a: defaultdict(int) for a in ascii_uppercase}
+graph = defaultdict(lambda:defaultdict(int))
 for _ in range(n):
     source, sink, capacity = input().split()
     graph[source][sink] += int(capacity)
+    graph[sink][source] += int(capacity)
 
 EK = EdmondsKarp(graph)
 
