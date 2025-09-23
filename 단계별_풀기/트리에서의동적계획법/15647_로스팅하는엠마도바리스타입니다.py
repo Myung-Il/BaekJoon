@@ -7,7 +7,8 @@ d : 거리
 결과 : 각 특정 농장에서 다른 농장까지의 거리 합을 구해야 함
 '''
 
-from sys import stdin
+from sys import stdin, setrecursionlimit
+setrecursionlimit(10**7)
 input = lambda:stdin.readline().strip()
 
 
