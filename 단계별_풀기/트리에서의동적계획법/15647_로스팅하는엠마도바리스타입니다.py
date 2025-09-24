@@ -27,44 +27,40 @@ class Node:
     def __init__(self, N):
         self.num = N
         self.edge = dict()
-
-        self.branch = dict()
     
     def add(self, nxt, dist):
-        self.edge[nxt] = dist
+        self.edge[nxt] = [1, dist]
 
-    def childAdd(self, child, dist):
-        self.branch[child] = dist
 
-def dfsSetting(idx, acnt, visit):
-    node = tree[idx]
-    cnt, weight = 1, acnt
+weight = 0
+def dfsSetting(idx, wei, visit):
+    global weight
+    weight += wei
 
+    if visit & (1<<idx):return 1
     visit |= (1<<idx)
-    for k, v in node.edge.items():
-        if visit & (1<<k):continue
-        childCnt, childWeight = dfsSetting(k, acnt+v, visit)
-        cnt += childCnt
-        weight += childWeight
-        node.childAdd(k, [childCnt, childWeight])
-        
-    return cnt, weight
 
+    total = 1
+    for nxt in tree[idx].edge:
+        if visit & (1<<nxt):continue
+        res = dfsSetting(nxt, wei+1, visit)
+        tree[idx].edge[nxt][0] = res
+        total += res
+
+    return total
 
 def dfsSolve(idx, res, visit):
     result[idx] = res
 
     visit |= (1<<idx)
-    for nxt in tree[idx].branch:
+    for nxt, (cnt, dist) in tree[idx].edge.items():
         if visit & (1<<nxt):continue
-        ec = tree[idx].edge[nxt]
-        op = tree[idx].branch[nxt][0]
-        dfsSolve(nxt, res - op*ec + (N-op)*ec, visit)
-
+        dfsSolve(nxt, res + dist*(N-cnt*2), visit)
 
 
 N = int(input())
 tree = [Node(idx)for idx in range(N+1)]
+total = {name:0 for name in tree[1].edge}
 result = [0]*(N+1)
 
 for _ in range(N-1):
@@ -73,5 +69,5 @@ for _ in range(N-1):
     tree[v].add(u, d)
 
 dfsSetting(1, 0, 1<<(N+1))
-dfsSolve(1, sum(elm[1] for elm in tree[1].branch.values()), 1<<(N+1))
+dfsSolve(1, weight, 1<<(N+1))
 for r in result[1:]:print(r)
