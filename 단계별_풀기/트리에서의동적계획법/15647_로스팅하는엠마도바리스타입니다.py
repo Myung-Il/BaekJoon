@@ -19,55 +19,54 @@ d : 거리
 '''
 
 from sys import stdin, setrecursionlimit
+from collections import deque
 setrecursionlimit(10**7)
 input = lambda:stdin.readline().strip()
 
+def BFS(start):
+    q = deque([start])
+    visit = 1<<N+1
 
-class Node:
-    def __init__(self, N):
-        self.num = N
-        self.edge = dict()
+    while q:
+        node = q.popleft()
+        
+        visit |= 1<<node
+        for nxt, d in tree[node]:
+            if visit & 1<<nxt: continue
+            q.append(nxt)
+
+            parent[nxt] = node
+            child[node].append(nxt)
+            dist[nxt] = d
+
+def DFS(start):
+    for nxt in child[start]:
+        DFS(nxt)
+        cnt[start] += cnt[nxt]
+        res[start] += res[nxt] + dist[nxt]*cnt[nxt]
     
-    def add(self, nxt, dist):
-        self.edge[nxt] = [1, dist]
-
-
-weight = 0
-def dfsSetting(idx, wei, visit):
-    global weight
-    weight += wei
-
-    if visit & (1<<idx):return 1
-    visit |= (1<<idx)
-
-    total = 1
-    for nxt in tree[idx].edge:
-        if visit & (1<<nxt):continue
-        res = dfsSetting(nxt, wei+1, visit)
-        tree[idx].edge[nxt][0] = res
-        total += res
-
-    return total
-
-def dfsSolve(idx, res, visit):
-    result[idx] = res
-
-    visit |= (1<<idx)
-    for nxt, (cnt, dist) in tree[idx].edge.items():
-        if visit & (1<<nxt):continue
-        dfsSolve(nxt, res + dist*(N-cnt*2), visit)
+def solve(start):
+    res[nxt] = res[start] + dist[nxt]*(N - cnt[nxt]*2)
+    for nxt in child[start]:solve(nxt)
 
 
 N = int(input())
-tree = [Node(idx)for idx in range(N+1)]
-total = {name:0 for name in tree[1].edge}
-result = [0]*(N+1)
+tree = [[] for _ in range(N+1)]
 
 for _ in range(N-1):
     u, v, d = map(int,input().split())
-    tree[u].add(v, d)
-    tree[v].add(u, d)
+    tree[u].append([v, d])
+    tree[v].append([u, d])
 
-dfsSetting(1, 0, 1<<(N+1))
-dfsSolve(1, weight, 1<<(N+1))
-for r in result[1:]:print(r)
+parent = [0]*(N+1)
+child = [[] for _ in range(N+1)]
+dist = [0]*(N+1)
+
+cnt = [1]*(N+1)
+res = [0]*(N+1)
+
+BFS(1)
+DFS(1)
+solve(1)
+
+print(*res[1:], sep="\n")
