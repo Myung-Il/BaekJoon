@@ -25,14 +25,12 @@ input = lambda:stdin.readline().strip()
 
 def BFS(start):
     q = deque([start])
-    visit = 1<<N+1
 
     while q:
         node = q.popleft()
         
-        visit |= 1<<node
         for nxt, d in tree[node]:
-            if visit & 1<<nxt: continue
+            if child[nxt]: continue
             q.append(nxt)
 
             parent[nxt] = node
@@ -46,8 +44,9 @@ def DFS(start):
         res[start] += res[nxt] + dist[nxt]*cnt[nxt]
     
 def solve(start):
-    res[nxt] = res[start] + dist[nxt]*(N - cnt[nxt]*2)
-    for nxt in child[start]:solve(nxt)
+    for nxt in child[start]:
+        res[nxt] = res[start] + dist[nxt]*(N - cnt[nxt]*2)
+        solve(nxt)
 
 
 N = int(input())
