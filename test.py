@@ -1,2 +1,4 @@
-n = int(input())
-print(n*(n-1)/2)
+s = 0
+for i in range(1414):
+    s += i+1
+print(s)
