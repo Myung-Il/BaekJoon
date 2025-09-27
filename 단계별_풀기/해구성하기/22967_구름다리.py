@@ -23,15 +23,15 @@ elif n==4:
         for j in range(i+1, n+1):
             if j in graph[i]:continue
             print(i, j)
-else: # 중앙을 찾아야 함
+else:
     node, length = 0, 0
     for i in range(n+1):
         if len(graph[i]) > length:
             node = i
             length = len(graph[i])
 
-    print(n-length)
+    print(n-length-1)
     print(2)
     for i in range(1, n+1):
-        if i in graph[node]:continue
+        if i in graph[node] or i==node:continue
         print(node, i)
