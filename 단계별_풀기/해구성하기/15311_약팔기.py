@@ -2,20 +2,18 @@ from sys import stdin
 input = lambda:stdin.readline().strip()
 
 n = int(input())
-arr = [i for i in range(2001)]
+for i in range(1, n+1):
+    if i+i*i >= n:break
 
-point = 1
-res = 0
-while True:
-    res += arr[point]
-    if res > n:
-        print(point-1)
-        break
-    elif res==n:
-        print(point)
-        break
-    point += 1
+print(i*2)
+for _ in range(i):print(1, end=' ')
+for _ in range(i):print(i, end=' ')
 
-for i in range(1, point+1):
-    if i==(res-n):continue
-    print(arr[i], end=' ')
+
+'''
+2 : 1 1
+4 : 1 1 2 2
+7 : 1 1 1 3 3 3
+13 : 1 1 1 1 4 4 4 4
+21 : 1 1 1 1 1 5 5 5 5 5
+'''
