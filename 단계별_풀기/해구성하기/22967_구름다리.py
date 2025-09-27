@@ -9,7 +9,10 @@ for _ in range(n-1):
     graph[a].append(b)
     graph[b].append(a)
 
-if n==3:
+if n==2:
+    print(0)
+    print(1)
+elif n==3:
     print(1)
     print(1)
     for i in range(1, n+1):
