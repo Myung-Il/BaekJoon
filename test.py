@@ -1,12 +1,6 @@
-s = 0
-for i in range(1415):
-    s += i+1
-print(s)
+l = [[0, 123, 32], [100, 3, 352]]
 
-
-n = 0
-while s>=1000000:
-    s -= n
-    n += 1
-
-print(s)
+for row in l:
+    output_line = ""
+    for num in row:output_line += f"{num:>4}"
+    print(output_line)
