@@ -1,4 +1,4 @@
-19586_울타리.py
-1081_합.py
-1011_FlymetotheAlphaCentauri.py
-1031_스타대결.py
+알고리즘_분류/기하학/19586_울타리.py
+알고리즘_분류/수학/1081_합.py
+알고리즘_분류/수학/1011_FlymetotheAlphaCentauri.py
+알고리즘_분류/최대유량/1031_스타대결.py
