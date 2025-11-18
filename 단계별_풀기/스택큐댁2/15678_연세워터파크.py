@@ -7,7 +7,7 @@ stone = list(map(int, input().split()))
 tree = [0]*(2**len(bin(n)[1:]))
 def search(node, left, right, start=0, end=n-1):
     if left<=start and end<=right: return tree[node]
-    if end<left or right<start: return 0
+    if end<left or right<start: return -float("inf")
     
     mid = (start+end)//2
     lt = search(node*2, left, right, start, mid)
@@ -15,9 +15,8 @@ def search(node, left, right, start=0, end=n-1):
     return max(lt, rt)
 
 def update(node, idx, val, start=0, end=n-1):
-    if start==end:
-        if start==idx:tree[node] = val
-    else:
+    if start==end==idx:tree[node] = val
+    elif start<=idx<=end:
         mid = (start+end)//2
         update(node*2, idx, val, start, mid)
         update(node*2+1, idx, val, mid+1, end)
