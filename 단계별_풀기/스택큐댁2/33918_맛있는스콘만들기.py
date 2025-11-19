@@ -1,26 +1,19 @@
 from sys import stdin
 input = lambda:stdin.readline().strip()
 
-
-def pt(g):
-    for i in dp:print(i)
+from collections import deque
+swp = deque()
 
 n, m, c, d = map(int, input().split())
 hit = list(map(int, input().split()))
+dp = [[0]*(m+1)for _ in range(n)]
 
-dp = [[0]*n for _ in range(m+1)]
-for i in range(m+1): dp[i][0] = i
+def taste(i, t):return m-abs(hit[i]-t)
 
-res = 0
-for k in range(m+1):
-    s = m-abs(hit[0]-k)
-    for i in range(1, n):
-        scon, idx = 0, dp[k][i-1]
-        for j in range(idx-d, idx+d+1, c):
-            new = m-abs(hit[i]-j)
-            if scon<=new: scon, idx = new, j
+for i in range(n):
+    for t in range(m+1):
+        for k in range(t-d, t+d+1, c):
+            if k<0 or m<k:continue
+            dp[i][t] = max(dp[i][t], taste(i, t)+dp[i-1][k])
 
-        dp[k][i] = idx
-        s += scon
-    res = max(res, s)
-print(res)
+for ddd in dp:print(ddd)
