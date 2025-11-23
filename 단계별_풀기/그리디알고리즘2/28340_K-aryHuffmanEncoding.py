@@ -9,14 +9,14 @@ for _ in range(int(input())):
     pq = []
     for c in list(map(int, input().split())):heapq.heappush(pq, -c)
 
-    limit = 0 if n<k else n-k
+    limit = k-1
     lvl = 1
-    idx = 1
+    idx = 0
     res = 0
     for _ in range(n-1):
-        if idx==limit:lvl, idx = lvl+1, 1
+        if idx==limit:lvl, idx = lvl+1, 0
         res-=heapq.heappop(pq)*lvl
-        print(f"lvl:{lvl}, idx:{idx}, lim:{limit} =", res)
         idx += 1
+    res-=heapq.heappop(pq)*lvl
     
-    print(f"lvl:{lvl}, idx:{idx}, lim:{limit} =", res)
+    print(res)
